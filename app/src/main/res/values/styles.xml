@@ -1,0 +1,27 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="SplashNoWhiteScreenStyle" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+
+    <style name="HyperLinkButtonStyle">
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textColor">@drawable/hypelink_style</item>
+    </style>
+    <style name="ButtonNormalStyle">
+        <item name="android:background">@drawable/button_style</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+    <style name="SearchChargeMapStyle" parent="AppTheme">
+
+    </style>
+</resources>
