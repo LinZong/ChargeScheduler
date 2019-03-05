@@ -21,7 +21,12 @@
         <item name="android:background">@drawable/button_style</item>
         <item name="android:stateListAnimator">@null</item>
     </style>
+    <style name="ReservationTypeSelectButtonStyle">
+        <item name="android:paddingLeft">25dp</item>
+        <item name="android:paddingRight">25dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:background">@drawable/reserve_type_select_btn</item>
+    </style>
     <style name="SearchChargeMapStyle" parent="AppTheme">
-
     </style>
 </resources>

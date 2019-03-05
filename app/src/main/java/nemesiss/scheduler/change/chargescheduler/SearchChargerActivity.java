@@ -5,6 +5,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
@@ -55,7 +56,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     private AMapLocationClientOption locationClientOption = null;
     private MapView mMapView = null;
     private GeocodeSearch geocoderSearch = new GeocodeSearch(SearchChargerActivity.this);
-
+    private FloatingActionButton StartReservationBtn = null;
     //Activity自身控件引用
     private SearchView SearchBar = null;
     private CardView cardView = null;
@@ -113,6 +114,18 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         SlidingUpPanel.setAnchorPoint(0.40f);
         SlidingUpInitialStatus = SlidingUpPanel.onSaveInstanceState();
         SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+
+        StartReservationBtn = findViewById(R.id.FloatingChargeBtn);
+        StartReservationBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent it = new Intent(SearchChargerActivity.this,ReservationTypeSelectActivity.class);
+                it.putExtra("WillGoToAddressTip",CurrentSearchTip);
+                startActivity(it);
+            }
+        });
 
         Log.d("THREADINFO", "上面的设置运行在" + Thread.currentThread().getId());
         SlidingUpPanel.setFadeOnClickListener(new View.OnClickListener()
