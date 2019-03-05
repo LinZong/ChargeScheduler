@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             xmlns:app="http://schemas.android.com/apk/res-auto"
-                                             xmlns:tools="http://schemas.android.com/tools"
-                                             android:layout_width="match_parent"
-                                             android:layout_height="match_parent">
 
+
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/SlideLocationDeatilConstraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <TextView
             android:text="某某地点"
-            android:layout_width="wrap_content"
+            android:layout_width="278dp"
             android:layout_height="wrap_content"
             android:id="@+id/SlideLocationName" android:layout_marginTop="16dp"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
@@ -16,7 +19,7 @@
             android:textColor="#000"/>
     <TextView
             android:text="距离您xxx公里"
-            android:layout_width="wrap_content"
+            android:layout_width="251dp"
             android:layout_height="wrap_content"
             android:id="@+id/SlideDistance" app:layout_constraintStart_toStartOf="@+id/SlideLocationName"
             android:layout_marginTop="4dp"
@@ -24,11 +27,13 @@
             android:textSize="12sp"/>
     <TextView
             android:text="某某地址"
-            android:layout_width="wrap_content"
+            android:layout_width="219dp"
             android:layout_height="wrap_content"
             android:id="@+id/SlideAddress" app:layout_constraintStart_toStartOf="@+id/SlideDistance"
             android:layout_marginTop="2dp" app:layout_constraintTop_toBottomOf="@+id/SlideDistance"
-            android:textSize="12sp"/>
+            android:textSize="12sp"
+            android:maxLines="1"
+            android:ellipsize="end"/>
     <Button
             android:text="即时充电"
             android:layout_width="wrap_content"
@@ -37,10 +42,28 @@
             app:layout_constraintEnd_toStartOf="@+id/guideline" android:layout_marginEnd="8dp"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="156dp"/>
-    <android.support.constraint.Guideline android:layout_width="wrap_content" android:layout_height="wrap_content"
+    <android.support.constraint.Guideline android:layout_width="wrap_content"
+                                          android:layout_height="wrap_content"
                                           android:id="@+id/guideline"
                                           android:orientation="vertical"
                                           app:layout_constraintGuide_percent="0.5"/>
+
+
+    <android.support.design.widget.FloatingActionButton
+            android:layout_width="48dp"
+            android:layout_height="51dp"
+            android:src="@drawable/ic_battery_charging_full_white_36dp"
+            android:scaleType="center"
+            app:borderWidth="0dp"
+            app:elevation="6dp"
+            app:fabSize="normal"
+            android:id="@+id/FloatingChargeBtn"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:focusable="true"/>
     <Button
             android:text="隔夜充电"
             android:layout_width="wrap_content"
@@ -53,9 +76,33 @@
             android:text="快充0/18 慢充0/30"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/SlideChargeStatus" app:layout_constraintStart_toEndOf="@+id/SlideDistance"
-            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            app:layout_constraintHorizontal_bias="1.0"
-            android:textSize="12sp" app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="44dp"/>
+            android:id="@+id/SlideChargeStatus"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="16dp"
+            android:textSize="12sp" app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="60dp"
+            app:layout_constraintStart_toEndOf="@+id/SlideAddress"
+            app:layout_constraintHorizontal_bias="1.0"/>
 
 </android.support.constraint.ConstraintLayout>
+
+        <!--<FrameLayout-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--app:layout_anchor="@id/SlideLocationDeatilConstraintLayout"-->
+        <!--app:layout_anchorGravity="top|right"-->
+        <!--android:layout_marginBottom="-120dp">-->
+
+
+        <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center|bottom"-->
+        <!--android:text="去充电"-->
+        <!--android:elevation="16dp"-->
+        <!--android:textColor="@android:color/white"-->
+        <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+        <!--android:textSize="6sp"-->
+        <!--android:layout_marginBottom="2dp"/>-->
+        <!--</FrameLayout>-->
+
+

@@ -29,15 +29,21 @@ import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.help.Tip;
+import com.amap.api.services.route.DistanceItem;
+import com.amap.api.services.route.DistanceResult;
+import com.amap.api.services.route.DistanceSearch;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import nemesiss.scheduler.change.chargescheduler.Models.City;
+import nemesiss.scheduler.change.chargescheduler.Models.TipWithDistance;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalVariables;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 
-import java.util.HashMap;
+import java.util.*;
 
 
 public class SearchChargerActivity extends AppCompatActivity implements AMapLocationListener, AMap.OnMyLocationChangeListener
@@ -48,6 +54,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     private AMapLocationClient locationClient = null;
     private AMapLocationClientOption locationClientOption = null;
     private MapView mMapView = null;
+    private GeocodeSearch geocoderSearch = new GeocodeSearch(SearchChargerActivity.this);
 
     //Activity自身控件引用
     private SearchView SearchBar = null;
@@ -61,7 +68,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     private Location MyLocation = null;
     private City MyLocationCity = new City();
     private Tip CurrentSearchTip = null;
-    private HashMap<String,Marker> OnMapMarker = new HashMap<>();
+    private HashMap<String, Marker> OnMapMarker = new HashMap<>();
     private Parcelable SlidingUpInitialStatus = null;
 
     //可观察对象
@@ -71,9 +78,10 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     //触发订阅
     private void setMyLocation(Location myLocation)
     {
-            MyLocation = myLocation;
-            MyLocationObservable.onNext(MyLocation);
+        MyLocation = myLocation;
+        MyLocationObservable.onNext(MyLocation);
     }
+
     private void setCurrentSearchTip(Tip newTip)
     {
         CurrentSearchTip = newTip;
@@ -85,10 +93,12 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     {
         return MyLocationObservable;
     }
+
     public BehaviorSubject<Tip> getCurrentSearchTipObservable()
     {
         return CurrentSearchTipObservable;
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -104,10 +114,12 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         SlidingUpInitialStatus = SlidingUpPanel.onSaveInstanceState();
         SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
 
-        Log.d("THREADINFO","上面的设置运行在"+Thread.currentThread().getId());
-        SlidingUpPanel.setFadeOnClickListener(new View.OnClickListener() {
+        Log.d("THREADINFO", "上面的设置运行在" + Thread.currentThread().getId());
+        SlidingUpPanel.setFadeOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
             }
         });
@@ -115,16 +127,17 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         Search_SearchMapConstraintLayout.requestFocus();
         Search_SearchMapConstraintLayout.findFocus();
         SearchBar.setOnQueryTextFocusChangeListener((view, b) -> {
-            if(b){
+            if (b)
+            {
                 Search_SearchMapConstraintLayout.requestFocus();
                 Search_SearchMapConstraintLayout.findFocus();
-                Intent it = new Intent(SearchChargerActivity.this,SearchActivity.class);
-                it.putExtra(getResources().getString(R.string.MyLocationCityName),MyLocationCity.getCityName());
-                it.putExtra(getResources().getString(R.string.MyLocation_Intent),MyLocation);
-                it.putExtra("FakeSearchBarResult",SearchBar.getQuery().toString());
+                Intent it = new Intent(SearchChargerActivity.this, SearchActivity.class);
+                it.putExtra(getResources().getString(R.string.MyLocationCityName), MyLocationCity.getCityName());
+                it.putExtra(getResources().getString(R.string.MyLocation_Intent), MyLocation);
+                it.putExtra("FakeSearchBarResult", SearchBar.getQuery().toString());
 
-                startActivityForResult(it,GlobalVariables.GOTO_SEARCH_VIEW_INTENT_CODE);
-                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                startActivityForResult(it, GlobalVariables.GOTO_SEARCH_VIEW_INTENT_CODE);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         });
 
@@ -179,22 +192,29 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        switch (requestCode){
+        switch (requestCode)
+        {
             case GlobalVariables
                     .GOTO_SEARCH_VIEW_INTENT_CODE:
             {
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK)
+                {
                     Tip tip = data.getParcelableExtra(getResources().getString(R.string.SearchLocationBackAddressName));
                     //给足够时间给面板展开
+                    SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                    SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                    SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                     SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                     //触发CurrentSearchTip订阅更新
                     setCurrentSearchTip(tip);
                 }
                 break;
             }
-            default:break;
+            default:
+                break;
         }
     }
+
     @Override
     public void onLocationChanged(AMapLocation aMapLocation)
     {
@@ -216,19 +236,21 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     {
         if (MyLocation != null)
         {
-            aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(MyLocation.getLatitude(),MyLocation.getLongitude()), 17));
+            aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(MyLocation.getLatitude(), MyLocation.getLongitude()), 17));
             SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
         }
     }
+
     @Override
     public void onMyLocationChange(Location location)
     {
         if (aMap != null)
         {
-            Log.d("SearchChargeActivity","定位自身成功");
+            Log.d("SearchChargeActivity", "定位自身成功");
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             setMyLocation(location);
-            if(IsApplicationBoot){
+            if (IsApplicationBoot)
+            {
                 aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
                 IsApplicationBoot = false;
             }
@@ -239,10 +261,9 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     {
         getMyLocationObservable()
                 .observeOn(Schedulers.newThread())
-                .map(latLng -> new LatLonPoint(latLng.getLatitude(),latLng.getLongitude()))
+                .map(latLng -> new LatLonPoint(latLng.getLatitude(), latLng.getLongitude()))
                 .map(latLonPoint -> {
-                    GeocodeSearch geocoderSearch = new GeocodeSearch(SearchChargerActivity.this);
-                    RegeocodeQuery regeocodeQuery = new RegeocodeQuery(latLonPoint,100, GeocodeSearch.AMAP);
+                    RegeocodeQuery regeocodeQuery = new RegeocodeQuery(latLonPoint, 100, GeocodeSearch.AMAP);
                     try
                     {
                         return geocoderSearch.getFromLocation(regeocodeQuery);
@@ -253,64 +274,93 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
                     return null;
                 })
                 .subscribe(regeocodeAddress -> {
-                    if(regeocodeAddress != null && MyLocationCity != null)
+                    if (regeocodeAddress != null && MyLocationCity != null)
                     {
                         MyLocationCity.setCityCode(regeocodeAddress.getCityCode());
                         MyLocationCity.setCityName(regeocodeAddress.getCity());
                     }
                 });
     }
+
     private void SubScribeCurrentSearchTipChanged()
     {
         getCurrentSearchTipObservable()
+                .observeOn(Schedulers.newThread())
+                .flatMap(
+                        (Func1<Tip, Observable<TipWithDistance>>) tip ->
+                        {
+                            LatLonPoint llp = tip.getPoint();//目的地
+
+                            DistanceSearch ds = new DistanceSearch(SearchChargerActivity.this);
+
+                            DistanceSearch.DistanceQuery distanceQuery = new DistanceSearch.DistanceQuery();
+                            List<LatLonPoint> originPoints = new ArrayList<>();
+                            originPoints.add(new LatLonPoint(MyLocation.getLatitude(), MyLocation.getLongitude()));
+                            distanceQuery.setOrigins(originPoints);
+                            distanceQuery.setDestination(llp);
+                            distanceQuery.setType(DistanceSearch.TYPE_DRIVING_DISTANCE);
+                            try
+                            {
+                                DistanceResult result = ds.calculateRouteDistance(distanceQuery);
+                                TipWithDistance twd = TipWithDistance.TransfromTipToTipWithDistance(tip, result.getDistanceResults().get(0));
+                                return Observable.just(twd);
+
+                            } catch (AMapException e)
+                            {
+                                //TODO 添加错误处理逻辑
+                                e.printStackTrace();
+                                return Observable.error(new Exception("服务器返回了错误的结果" + e.getErrorMessage()));
+                            }
+
+                        })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Tip>()
+                .subscribe(new Action1<TipWithDistance>()
                 {
                     @Override
-                    public void call(Tip tip)
+                    public void call(TipWithDistance tip)
                     {
 
                         //绘制Marker
-                        if(aMap != null && tip != null)
+                        if (aMap != null && tip != null)
                         {
                             //设置当前搜索的条目
-                            SearchBar.setQuery(tip.getName(),false);
+                            SearchBar.setQuery(tip.getName(), false);
 
                             //先清除掉之前的标记
                             aMap.clear(true);
                             OnMapMarker.clear();
+
                             String detailedAddress = new StringBuilder(tip.getDistrict()).append(tip.getAddress()).toString();
-                            LatLng lt = new LatLng(tip.getPoint().getLatitude(),tip.getPoint().getLongitude());
+                            LatLng lt = new LatLng(tip.getPoint().getLatitude(), tip.getPoint().getLongitude());
                             final Marker marker = aMap.addMarker(new MarkerOptions()
                                     .position(lt)
                                     .title(tip.getName())
                                     .snippet(detailedAddress)
                                     .draggable(false));
                             //把摄像机移动到定位中心点
-                            aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lt,17));
-                            OnMapMarker.put(tip.getName(),marker);
+                            aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lt, 17));
+                            OnMapMarker.put(tip.getName(), marker);
 
-                            //展现SlideUpLayout.
+                            //获取位置信息
+                            DistanceItem dis = tip.getDistanceResult();
                             TextView addr = SlidingUpPanel.findViewById(R.id.SlideAddress);
                             TextView locName = SlidingUpPanel.findViewById(R.id.SlideLocationName);
+                            TextView disTextView = SlidingUpPanel.findViewById(R.id.SlideDistance);
+                            if (dis != null)
+                            {
+                                String disResult = String.format("距离您 %.2f 公里", (double) dis.getDistance() / 1000);
+                                disTextView.setText(disResult);
+                            }
+                            //展现SlideUpLayout.
                             locName.setText(tip.getName());
                             addr.setText(detailedAddress);
-//                            if(IsFirstTimeShowSlideLayout)
-//                            {
-//                                SlidingUpPanel.onRestoreInstanceState(SlidingUpInitialStatus);
-//                                IsFirstTimeShowSlideLayout = false;
-//                            }
-//                            else
-//                            {
-                                //Log.d("THREADINFO","下面的设置运行在"+Thread.currentThread().getId());
-                            //}
                         }
                     }
+                }, (throwable) -> {
+                    throwable.printStackTrace();
+                    Toast.makeText(SearchChargerActivity.this,throwable.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-
-
-
 
 
     @Override
@@ -318,7 +368,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     {
         super.onDestroy();
         mMapView.onDestroy();
-        if(locationClient!=null) locationClient.stopLocation();
+        if (locationClient != null) locationClient.stopLocation();
         aMap.setMyLocationEnabled(false);
     }
 
@@ -336,7 +386,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         super.onPause();
         mMapView.onPause();
         aMap.setMyLocationEnabled(false);
-        if(locationClient!=null) locationClient.stopLocation();
+        if (locationClient != null) locationClient.stopLocation();
     }
 
     @Override

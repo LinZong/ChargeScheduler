@@ -8,10 +8,11 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         tools:context=".SearchChargerActivity"
         android:gravity="bottom"
-        app:umanoPanelHeight="95dp"
+        app:umanoPanelHeight="100dp"
         app:umanoShadowHeight="4dp"
         android:id="@+id/RelaxLayout"
-        app:umanoFadeColor="@android:color/transparent">
+        app:umanoFadeColor="@android:color/transparent"
+        app:umanoDragView="@id/SlideLocationDeatilConstraintLayout">
 
     <android.support.constraint.ConstraintLayout
 
@@ -58,5 +59,7 @@
             />
         </android.support.v7.widget.CardView>
     </android.support.constraint.ConstraintLayout>
+
     <include layout="@layout/slide_layout"></include>
+
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>
