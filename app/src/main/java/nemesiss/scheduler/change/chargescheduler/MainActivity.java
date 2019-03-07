@@ -1,6 +1,7 @@
 package nemesiss.scheduler.change.chargescheduler;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -37,11 +38,14 @@ public class MainActivity extends AppCompatActivity
 
     public void AttemptLogin(View view)
     {
-        LoginProgress =  GlobalUtils.ShowProgressDialog(MainActivity.this,false,"正在登陆", "请稍后...");
-        LoginProgress.show();
-        String un = phoneText.getText().toString();
-        String pw = passwordText.getText().toString();
-        new ValidatePasswordTask().execute(un,pw);
+//        LoginProgress =  GlobalUtils.ShowProgressDialog(MainActivity.this,false,"正在登陆", "请稍后...");
+//        LoginProgress.show();
+//        String un = phoneText.getText().toString();
+//        String pw = passwordText.getText().toString();
+//        new ValidatePasswordTask().execute(un,pw);
+
+        startActivity(new Intent(MainActivity.this,SearchChargerActivity.class));
+        finish();
     }
 
     class ValidatePasswordTask extends AsyncTask<String,Integer,Boolean>

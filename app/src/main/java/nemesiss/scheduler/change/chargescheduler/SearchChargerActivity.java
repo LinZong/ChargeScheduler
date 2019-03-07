@@ -1,18 +1,21 @@
 package nemesiss.scheduler.change.chargescheduler;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
-import android.widget.SearchView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
+import androidx.annotation.Nullable;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
@@ -36,6 +39,7 @@ import com.amap.api.services.route.DistanceSearch;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import nemesiss.scheduler.change.chargescheduler.Models.City;
 import nemesiss.scheduler.change.chargescheduler.Models.TipWithDistance;
+import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalVariables;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -54,14 +58,21 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     private AMap aMap = null;
     private AMapLocationClient locationClient = null;
     private AMapLocationClientOption locationClientOption = null;
-    private MapView mMapView = null;
-    private GeocodeSearch geocoderSearch = new GeocodeSearch(SearchChargerActivity.this);
-    private FloatingActionButton StartReservationBtn = null;
+
     //Activity自身控件引用
-    private SearchView SearchBar = null;
-    private CardView cardView = null;
-    private ConstraintLayout Search_SearchMapConstraintLayout = null;
-    private SlidingUpPanelLayout SlidingUpPanel = null;
+    @BindView(R.id.map) MapView mMapView;
+    @Nullable
+    @BindView(R.id.FloatingChargeBtn) FloatingActionButton StartReservationBtn;
+    @Nullable
+    @BindView(R.id.AutoSearchChargerBtn) Button AutoSearchChargerBtn;
+    @Nullable
+    @BindView(R.id.Search_FakeSearchBar) SearchView SearchBar;
+    @Nullable
+    @BindView(R.id.Search_SearchBarParentCardView) CardView cardView;
+    @Nullable
+    @BindView(R.id.Search_SearchMapConstraintLayout) ConstraintLayout Search_SearchMapConstraintLayout;
+    @Nullable
+    @BindView(R.id.RelaxLayout) SlidingUpPanelLayout SlidingUpPanel;
 
     //状态量
     private boolean IsApplicationBoot = true;
@@ -105,26 +116,24 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_charger);
-        mMapView = (MapView) findViewById(R.id.map);
-        SearchBar = findViewById(R.id.Search_FakeSearchBar);
-        cardView = findViewById(R.id.Search_SearchBarParentCardView);
-        Search_SearchMapConstraintLayout = findViewById(R.id.Search_SearchMapConstraintLayout);
+        ButterKnife.bind(this);
+//        mMapView = (MapView) findViewById(R.id.map);
+//        SearchBar = findViewById(R.id.Search_FakeSearchBar);
+//        cardView = findViewById(R.id.Search_SearchBarParentCardView);
+//        Search_SearchMapConstraintLayout = findViewById(R.id.Search_SearchMapConstraintLayout);
+//        AutoSearchChargerBtn = findViewById(R.id.AutoSearchChargerBtn);
+//        StartReservationBtn = findViewById(R.id.FloatingChargeBtn);
 
-        SlidingUpPanel = findViewById(R.id.RelaxLayout);
+//        SlidingUpPanel = findViewById(R.id.RelaxLayout);
         SlidingUpPanel.setAnchorPoint(0.40f);
         SlidingUpInitialStatus = SlidingUpPanel.onSaveInstanceState();
         SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
 
-        StartReservationBtn = findViewById(R.id.FloatingChargeBtn);
-        StartReservationBtn.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                Intent it = new Intent(SearchChargerActivity.this,ReservationTypeSelectActivity.class);
-                it.putExtra("WillGoToAddressTip",CurrentSearchTip);
-                startActivity(it);
-            }
+
+        StartReservationBtn.setOnClickListener(view -> {
+            Intent it = new Intent(SearchChargerActivity.this,ReservationTypeSelectActivity.class);
+            it.putExtra("WillGoToAddressTip",CurrentSearchTip);
+            startActivity(it);
         });
 
         Log.d("THREADINFO", "上面的设置运行在" + Thread.currentThread().getId());
@@ -136,6 +145,9 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
                 SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
             }
         });
+
+
+
 
         Search_SearchMapConstraintLayout.requestFocus();
         Search_SearchMapConstraintLayout.findFocus();
@@ -154,7 +166,12 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
             }
         });
 
+        AutoSearchChargerBtn.setOnClickListener(this::AttemptAutoSearchChargeStation);
 
+        int magId = getResources().getIdentifier("android:id/search_mag_icon", null, null);
+        ImageView magImage = (ImageView) SearchBar.findViewById(magId);
+        
+        magImage.setOnClickListener(this::ExpandDrawerSlider);
         //设置订阅可观察对象的逻辑
         SubScribeMyLocationChanged();
         SubScribeCurrentSearchTipChanged();
@@ -166,6 +183,29 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
             SetLocationStyle();
             ConfigureLocationClient();
         }
+    }
+
+    private void ExpandDrawerSlider(View view)
+    {
+        AlertDialog.Builder bd = GlobalUtils.ShowAlertDialog(SearchChargerActivity.this,true,
+                "测试版提醒", "本来这个按钮应该展开侧栏的，侧栏里会有用户信息和设置的入口。但是很明显现在设置是不存在的，侧栏也是不存在的。");
+        bd.setPositiveButton("确定", (d, i) -> {
+        });
+        bd.show();
+    }
+
+    private void AttemptAutoSearchChargeStation(View view)
+    {
+        AlertDialog.Builder bd = GlobalUtils.ShowAlertDialog(SearchChargerActivity.this,true,
+                "测试版提醒", "由于该版本为测试版, 因此并没有自动搜寻最佳充电站的逻辑. 点击确定后将跳转到预约界面.\n" +
+                        "你也可以尝试着搜索一下充电站信息，体验指定充电站预约的过程.");
+        bd.setPositiveButton("确定", (d, i) -> {
+            Intent it = new Intent(SearchChargerActivity.this,ReservationTypeSelectActivity.class);
+            it.putExtra("WillGoToAddressTip",CurrentSearchTip);
+            startActivity(it);
+        });
+        bd.show();
+
     }
 
     private void InitialAMapComponents()
@@ -218,6 +258,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
                     SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                     SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                     SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                    AutoSearchChargerBtn.setVisibility(View.GONE);
                     //触发CurrentSearchTip订阅更新
                     setCurrentSearchTip(tip);
                 }
@@ -251,6 +292,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         {
             aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(MyLocation.getLatitude(), MyLocation.getLongitude()), 17));
             SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+            AutoSearchChargerBtn.setVisibility(View.VISIBLE);
         }
     }
 
@@ -279,6 +321,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
                     RegeocodeQuery regeocodeQuery = new RegeocodeQuery(latLonPoint, 100, GeocodeSearch.AMAP);
                     try
                     {
+                        GeocodeSearch geocoderSearch = new GeocodeSearch(SearchChargerActivity.this);
                         return geocoderSearch.getFromLocation(regeocodeQuery);
                     } catch (AMapException e)
                     {
@@ -289,8 +332,17 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
                 .subscribe(regeocodeAddress -> {
                     if (regeocodeAddress != null && MyLocationCity != null)
                     {
+
                         MyLocationCity.setCityCode(regeocodeAddress.getCityCode());
                         MyLocationCity.setCityName(regeocodeAddress.getCity());
+                    }
+                }, new Action1<Throwable>()
+                {
+                    @Override
+                    public void call(Throwable throwable)
+                    {
+                        throwable.printStackTrace();
+                        Toast.makeText(SearchChargerActivity.this,throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -343,7 +395,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
                             aMap.clear(true);
                             OnMapMarker.clear();
 
-                            String detailedAddress = new StringBuilder(tip.getDistrict()).append(tip.getAddress()).toString();
+                            String detailedAddress = tip.getDistrict() + tip.getAddress();
                             LatLng lt = new LatLng(tip.getPoint().getLatitude(), tip.getPoint().getLongitude());
                             final Marker marker = aMap.addMarker(new MarkerOptions()
                                     .position(lt)

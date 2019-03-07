@@ -33,12 +33,12 @@ public class SearchActivity extends AppCompatActivity implements Inputtips.Input
     private SearchResultAdapter resultAdapter;
     private List<Tip> SearchResult = new ArrayList<>();
     private String MyCityFromMain = null;
-    private Location MyLocationFronMainActivity = null;
+    private Location MyLocationFromMainActivity = null;
 
     private void GetLocationFromMainActivity()
     {
         MyCityFromMain = getIntent().getStringExtra(getResources().getString(R.string.MyLocationCityName));
-        MyLocationFronMainActivity = getIntent().getParcelableExtra(getResources().getString(R.string.MyLocation_Intent));
+        MyLocationFromMainActivity = getIntent().getParcelableExtra(getResources().getString(R.string.MyLocation_Intent));
         String fakeSearchResult = getIntent().getStringExtra("FakeSearchBarResult");
         //将上次搜索结果带过来
         if(!TextUtils.isEmpty(fakeSearchResult) && searchView != null)
@@ -86,9 +86,12 @@ public class SearchActivity extends AppCompatActivity implements Inputtips.Input
                             if (!TextUtils.isEmpty(QueryText))
                             {
                                 inputtipsQuery = new InputtipsQuery(QueryText, MyCityFromMain);
-                                inputtipsQuery.setLocation(new LatLonPoint(
-                                        MyLocationFronMainActivity.getLatitude(),
-                                        MyLocationFronMainActivity.getLongitude()));
+                                if(MyLocationFromMainActivity!=null)
+                                {
+                                    inputtipsQuery.setLocation(new LatLonPoint(
+                                            MyLocationFromMainActivity.getLatitude(),
+                                            MyLocationFromMainActivity.getLongitude()));
+                                }
                             }
                             return inputtipsQuery;
                         })

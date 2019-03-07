@@ -1,18 +1,19 @@
 package nemesiss.scheduler.change.chargescheduler.Models;
-
 import nemesiss.scheduler.change.chargescheduler.ReservationTypeSelectActivity;
+import java.io.Serializable;
+import java.util.Date;
 
-public class ChargeReservation
+public class ChargeReservation implements Serializable
 {
     private ReservationTypeSelectActivity.ChargeType chargeType;
-    private String ReservationTime;
+    private Date ReservationTime;
 
     public ReservationTypeSelectActivity.ChargeType getChargeType()
     {
         return chargeType;
     }
 
-    public String getReservationTime()
+    public Date getReservationTime()
     {
         return ReservationTime;
     }
@@ -22,7 +23,7 @@ public class ChargeReservation
         this.chargeType = chargeType;
     }
 
-    public void setReservationTime(String reservationTime)
+    public void setReservationTime(Date reservationTime)
     {
         ReservationTime = reservationTime;
     }

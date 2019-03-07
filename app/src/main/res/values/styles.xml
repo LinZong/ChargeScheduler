@@ -19,7 +19,6 @@
     </style>
     <style name="ButtonNormalStyle">
         <item name="android:background">@drawable/button_style</item>
-        <item name="android:stateListAnimator">@null</item>
     </style>
     <style name="ReservationTypeSelectButtonStyle">
         <item name="android:paddingLeft">25dp</item>

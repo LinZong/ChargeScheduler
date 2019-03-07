@@ -10,11 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import nemesiss.scheduler.change.chargescheduler.Models.ChargeReservation;
+import com.github.ikidou.fragmentBackHandler.FragmentBackHandler;
 import nemesiss.scheduler.change.chargescheduler.R;
 import nemesiss.scheduler.change.chargescheduler.ReservationTypeSelectActivity;
 
-public class ReserverTypeFrag extends Fragment implements ChainFragment
+public class ReserverTypeFrag extends Fragment implements ChainFragment, FragmentBackHandler
 {
     private View.OnClickListener SelectTypeListener = new View.OnClickListener()
     {
@@ -60,11 +60,18 @@ public class ReserverTypeFrag extends Fragment implements ChainFragment
         if(fm!=null)
         {
             FragmentTransaction ft = fm.beginTransaction();
-            ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out,android.R.anim.fade_in,android.R.anim.fade_out);
+            ft.setCustomAnimations(R.anim.slide_in,R.anim.slide_out,R.anim.pop_slide_in,R.anim.pop_slide_out);
             ft.replace(R.id.ReservationFragment,fragment);
+            activity.SetHintTitle("选择预约的时间");
             activity.setCurrentFragmentChain((ChainFragment)fragment);
             ft.addToBackStack(null);
             ft.commit();
         }
+    }
+
+    @Override
+    public boolean onBackPressed()
+    {
+        return false;
     }
 }

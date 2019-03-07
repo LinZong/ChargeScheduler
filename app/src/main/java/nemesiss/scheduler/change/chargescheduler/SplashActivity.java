@@ -33,7 +33,7 @@ public class SplashActivity extends AppCompatActivity
     }
 
     private void JumpToMainActivity(){
-        Intent it = new Intent(SplashActivity.this,SearchChargerActivity.class);
+        Intent it = new Intent(SplashActivity.this,MainActivity.class);
         startActivity(it);
         overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
         finish();
