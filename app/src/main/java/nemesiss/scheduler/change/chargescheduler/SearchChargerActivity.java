@@ -1,16 +1,20 @@
 package nemesiss.scheduler.change.chargescheduler;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.support.design.widget.NavigationView;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import androidx.annotation.Nullable;
@@ -48,7 +52,9 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 public class SearchChargerActivity extends AppCompatActivity implements AMapLocationListener, AMap.OnMyLocationChangeListener
@@ -73,6 +79,10 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     @BindView(R.id.Search_SearchMapConstraintLayout) ConstraintLayout Search_SearchMapConstraintLayout;
     @Nullable
     @BindView(R.id.RelaxLayout) SlidingUpPanelLayout SlidingUpPanel;
+
+    @BindView(R.id.nav_selection_view) NavigationView LeftSlideNavMenu;
+    @BindView(R.id.Search_SearchMapDrawerLayout) DrawerLayout Search_SearchMapDrawerLayout;
+
 
     //状态量
     private boolean IsApplicationBoot = true;
@@ -125,6 +135,8 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
 //        StartReservationBtn = findViewById(R.id.FloatingChargeBtn);
 
 //        SlidingUpPanel = findViewById(R.id.RelaxLayout);
+
+        LeftSlideNavMenu.setNavigationItemSelectedListener(this::OnNavigationItemSelected);
         SlidingUpPanel.setAnchorPoint(0.40f);
         SlidingUpInitialStatus = SlidingUpPanel.onSaveInstanceState();
         SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
@@ -185,13 +197,28 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         }
     }
 
+    private boolean OnNavigationItemSelected(MenuItem menuItem)
+    {
+        int clickId = menuItem.getItemId();
+        switch (clickId){
+            case R.id.nav_my_reservation:{
+                Log.v("NAVMENU","点击了我的预约");
+                break;
+            }
+            case R.id.nav_settings:{
+                Log.v("NAVMENU","点击了设置");
+                break;
+            }
+            default:break;
+        }
+        LeftSlideNavMenu.setCheckedItem(R.id.menu_none);
+        Search_SearchMapDrawerLayout.closeDrawers();
+        return false;
+    }
+
     private void ExpandDrawerSlider(View view)
     {
-        AlertDialog.Builder bd = GlobalUtils.ShowAlertDialog(SearchChargerActivity.this,true,
-                "测试版提醒", "本来这个按钮应该展开侧栏的，侧栏里会有用户信息和设置的入口。但是很明显现在设置是不存在的，侧栏也是不存在的。");
-        bd.setPositiveButton("确定", (d, i) -> {
-        });
-        bd.show();
+        Search_SearchMapDrawerLayout.openDrawer(GravityCompat.START);
     }
 
     private void AttemptAutoSearchChargeStation(View view)

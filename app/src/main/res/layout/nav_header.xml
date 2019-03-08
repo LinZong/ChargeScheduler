@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+                                             android:layout_height="180dp"
+                                             android:background="@drawable/nav_header_background">
+    <de.hdodenhof.circleimageview.CircleImageView android:layout_width="80dp" android:layout_height="80dp"
+                                                  android:id="@+id/nav_header_avatar"
+                                                  android:src="@drawable/fake_avatar"
+                                                  app:layout_constraintTop_toTopOf="parent"
+                                                  android:layout_marginTop="24dp"
+                                                  app:layout_constraintStart_toStartOf="parent"
+                                                  android:layout_marginStart="16dp"/>
+    <TextView
+            android:text="Nemesiss Lin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView6" app:layout_constraintStart_toStartOf="@+id/nav_header_avatar"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/nav_header_avatar"
+            android:textSize="18sp"
+    android:textColor="#fff"
+            android:textStyle="bold"/>
+    <TextView
+            android:text="nemesisslin@gmail.com"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView7" android:layout_marginTop="4dp"
+            app:layout_constraintTop_toBottomOf="@+id/textView6" app:layout_constraintStart_toStartOf="@+id/textView6"
+            android:textColor="#fff"
+    />
+</android.support.constraint.ConstraintLayout>
