@@ -12,7 +12,6 @@ import nemesiss.scheduler.change.chargescheduler.Utils.HMacSha256;
 import okhttp3.*;
 
 import java.io.IOException;
-import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -67,8 +66,8 @@ public class UserServices
                     //TODO : Persistence Token and Expire Time to somewhere, and tell UI finished.
                     //设置已登录的用户信息到全局Application中
                     ChargerApplication.setToken(model.getTokenResponse());
-                    ChargerApplication.setLoginedUser(new User(PhoneNumber,null,Password));
-
+                    if(ChargerApplication.getLoginedUser()==null)
+                        ChargerApplication.setLoginedUser(new User(PhoneNumber,model.getUserID(),encryptedPassword));
                     return LoginStatus.LOGIN_SUCCESSFUL;
                 }
                 case 1101:
@@ -118,7 +117,7 @@ public class UserServices
 
         try
         {
-            Response resp = SendPostRequest(RequestUrl.getRegisterUrl(),null,body);
+            Response resp = CommonServices.SendPostRequest(client,RequestUrl.getRegisterUrl(),null,body);
             if(resp!=null && resp.isSuccessful())
             {
                 Gson gson = new Gson();
@@ -150,7 +149,7 @@ public class UserServices
 
         try
         {
-            Response resp = SendPostRequest(RequestUrl.getLoginUrl(),null,body);
+            Response resp = CommonServices.SendPostRequest(client,RequestUrl.getLoginUrl(),null,body);
             if (resp != null && resp.isSuccessful())
             {
                 String respJson = resp.body().string();
@@ -165,29 +164,7 @@ public class UserServices
         return null;
     }
 
-    private Response SendPostRequest(String url,List<Pair<String,String>> Header,List<Pair<String,String>> Body) throws IOException
-    {
-        MultipartBody.Builder requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM);
-        if(Body!=null)
-        {
-            for (Pair<String, String> p : Body)
-            {
-                requestBody.addFormDataPart(p.first,p.second);
-            }
-        }
 
-        Request.Builder reqBuilder = new Request.Builder().url(url).post(requestBody.build());
-        if(Header!=null)
-        {
-            for (Pair<String, String> head : Header)
-            {
-                reqBuilder.addHeader(head.first,head.second);
-            }
-        }
-        Request req = reqBuilder.build();
-        return client.newCall(req).execute();
-    }
 
     public static boolean CheckIfNeedToRefreshToken(Date tokenTaggedExpireDate)
     {
@@ -195,5 +172,13 @@ public class UserServices
         long tagged = tokenTaggedExpireDate.getTime();
         long now = Now.getTime();
         return  ((int)(tagged - now)/(1000*60)) < 5;
+    }
+
+    public boolean RefreshToken()
+    {
+        User us = ChargerApplication.getLoginedUser();
+        if(us==null) return false;
+        LoginStatus status = Login(us.getPhone(),us.getPassword(),false);
+        return status == LoginStatus.LOGIN_SUCCESSFUL;
     }
 }

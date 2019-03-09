@@ -2,6 +2,7 @@ package nemesiss.scheduler.change.chargescheduler;
 
 import android.content.Intent;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.constraint.ConstraintLayout;
@@ -13,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.design.widget.NavigationView;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
@@ -39,11 +41,21 @@ import com.amap.api.services.help.Tip;
 import com.amap.api.services.route.DistanceItem;
 import com.amap.api.services.route.DistanceResult;
 import com.amap.api.services.route.DistanceSearch;
+import com.google.gson.Gson;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
+import nemesiss.scheduler.change.chargescheduler.Constants.RequestUrl;
 import nemesiss.scheduler.change.chargescheduler.Models.City;
+import nemesiss.scheduler.change.chargescheduler.Models.Response.TokenResponseInfo;
+import nemesiss.scheduler.change.chargescheduler.Models.Response.UserInfoResponseModel;
 import nemesiss.scheduler.change.chargescheduler.Models.TipWithDistance;
+import nemesiss.scheduler.change.chargescheduler.Models.User;
+import nemesiss.scheduler.change.chargescheduler.Services.Users.CommonServices;
+import nemesiss.scheduler.change.chargescheduler.Services.Users.UserServices;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
-import nemesiss.scheduler.change.chargescheduler.Utils.GlobalVariables;
+import nemesiss.scheduler.change.chargescheduler.Constants.GlobalVariables;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -51,6 +63,7 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +94,6 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
 
     @BindView(R.id.nav_selection_view) NavigationView LeftSlideNavMenu;
     @BindView(R.id.Search_SearchMapDrawerLayout) DrawerLayout Search_SearchMapDrawerLayout;
-
 
     //状态量
     private boolean IsApplicationBoot = true;
@@ -139,7 +151,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         SlidingUpPanel.setAnchorPoint(0.40f);
         SlidingUpInitialStatus = SlidingUpPanel.onSaveInstanceState();
         SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-
+        new GetDetailedUserTask().execute();
 
         StartReservationBtn.setOnClickListener(view -> {
             Intent it = new Intent(SearchChargerActivity.this,ReservationTypeSelectActivity.class);
@@ -487,5 +499,75 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     {
         super.onSaveInstanceState(outState);
         mMapView.onSaveInstanceState(outState);
+    }
+
+
+
+    class GetDetailedUserTask extends AsyncTask<Void,Void,Boolean>
+    {
+
+        private UserServices us;
+        private OkHttpClient client;
+        @Override
+        protected Boolean doInBackground(Void... voids)
+        {
+            List<Pair<String,String>> qs = new ArrayList<>();
+            qs.add(new Pair<>("UserId",String.valueOf(ChargerApplication.getLoginedUser().getId())));
+            TokenResponseInfo tkInfo = ChargerApplication.getToken();
+            if(UserServices.CheckIfNeedToRefreshToken(tkInfo.getDateExpire()))
+            {
+                if(!us.RefreshToken()) return false;
+            }
+
+            List<Pair<String,String>> header = new ArrayList<>();
+            header.add(new Pair<>("Authorization","Bearer "+ChargerApplication.getToken().getToken()));
+            try
+            {
+                Response resp = CommonServices.SendGetRequest(client, RequestUrl.getUserInfoUrl(),qs,header);
+                if(resp!=null&&resp.isSuccessful())
+                {
+                    String json = resp.body().string();
+                    Gson gson = new Gson();
+                    UserInfoResponseModel model = gson.fromJson(json, UserInfoResponseModel.class);
+                    User user = model.getUserInformation();
+                    if(user != null)
+                    {
+                        User loginedUser = ChargerApplication.getLoginedUser();
+                        loginedUser.setCarTypeId(user.getCarTypeId());
+                        loginedUser.setCredits(user.getCredits());
+                        loginedUser.setNickname(user.getNickname());
+                        return true;
+                    }
+                }
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            Toast.makeText(SearchChargerActivity.this,"加载个人信息失败", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        @Override
+        protected void onPreExecute()
+        {
+            super.onPreExecute();
+            us = ChargerApplication.getUserServices();
+            client = new OkHttpClient();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result)
+        {
+            super.onPostExecute(result);
+            if(result){
+                TextView nickName = LeftSlideNavMenu.findViewById(R.id.NavHeaderUserNickname);
+                TextView pn = LeftSlideNavMenu.findViewById(R.id.NavHeaderPhoneNumber);
+
+                User user = ChargerApplication.getLoginedUser();
+                nickName.setText(user.getNickname());
+                pn.setText(user.getPhone());
+            }
+            client = null;//toggle gc.
+        }
     }
 }

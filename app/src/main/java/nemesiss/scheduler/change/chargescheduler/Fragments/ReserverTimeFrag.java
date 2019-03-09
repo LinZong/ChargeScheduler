@@ -43,6 +43,7 @@ public class ReserverTimeFrag extends Fragment implements ChainFragment, Fragmen
         ConfirmTimeSelection.setOnClickListener(this::OnConfirmClick);
 
         LastSelectIndex = 0;
+
         if(savedInstanceState!=null)
         {
             LastSelectIndex = savedInstanceState.getInt("LastSelectIndex",0);

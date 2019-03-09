@@ -98,6 +98,13 @@
                 android:onClick="AttemptRegister"
                 android:textColor="#fff"
                 android:textSize="16sp"/>
+        <CheckBox
+                android:text="已阅读并同意用户协议"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/UserLawCheckBox" app:layout_constraintStart_toStartOf="@+id/Register_CarTypeSelect"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/Register_CarTypeSelect"/>
     </android.support.constraint.ConstraintLayout>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -15,7 +15,6 @@ import com.amap.api.services.help.Tip;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
 import nemesiss.scheduler.change.chargescheduler.R;
 import nemesiss.scheduler.change.chargescheduler.SearchActivity;
-import nemesiss.scheduler.change.chargescheduler.Utils.GlobalVariables;
 
 import java.util.List;
 

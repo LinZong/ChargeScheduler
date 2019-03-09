@@ -1,4 +1,4 @@
-package nemesiss.scheduler.change.chargescheduler.Utils;
+package nemesiss.scheduler.change.chargescheduler.Constants;
 
 public class GlobalVariables
 {

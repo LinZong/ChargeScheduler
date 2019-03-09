@@ -3,81 +3,79 @@ package nemesiss.scheduler.change.chargescheduler.Models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class User implements Parcelable
+public class User
 {
-    private String Telephone;
-    private String Username;
+    private String Phone;
+    private long Id;
+    private String Nickname;
+    private int CarTypeId;
+    private int Credits;
     private String Password;
 
-    public String getTelephone()
+    public User(){}
+    public User(String phone,long id,String password)
     {
-        return Telephone;
+        setPhone(phone);
+        setId(id);
+        setPassword(password);
     }
     public String getPassword()
     {
         return Password;
     }
-    public String getUsername()
+
+    public int getCarTypeId()
     {
-        return Username;
+        return CarTypeId;
     }
+
+    public int getCredits()
+    {
+        return Credits;
+    }
+
+    public long getId()
+    {
+        return Id;
+    }
+
+    public String getNickname()
+    {
+        return Nickname;
+    }
+
+    public String getPhone()
+    {
+        return Phone;
+    }
+
+    public void setId(long id)
+    {
+        Id = id;
+    }
+
+    public void setCarTypeId(int carTypeId)
+    {
+        CarTypeId = carTypeId;
+    }
+
+    public void setCredits(int credits)
+    {
+        Credits = credits;
+    }
+
+    public void setNickname(String nickname)
+    {
+        Nickname = nickname;
+    }
+
+    public void setPhone(String phone)
+    {
+        Phone = phone;
+    }
+
     public void setPassword(String password)
     {
         Password = password;
-    }
-    public void setTelephone(String telephone)
-    {
-        Telephone = telephone;
-    }
-    public void setUsername(String username)
-    {
-        Username = username;
-    }
-
-    protected User(Parcel in)
-    {
-
-    }
-
-    public User()
-    {
-
-    }
-    public User(String telephone,String username,String password)
-    {
-        setTelephone(telephone);
-        setPassword(password);
-        setUsername(username);
-    }
-    public static final Creator<User> CREATOR = new Creator<User>()
-    {
-        @Override
-        public User createFromParcel(Parcel in)
-        {
-            String tele = in.readString();
-            String userName = in.readString();
-            String passwd = in.readString();
-            return new User(tele,userName,passwd);
-        }
-
-        @Override
-        public User[] newArray(int size)
-        {
-            return new User[size];
-        }
-    };
-
-    @Override
-    public int describeContents()
-    {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i)
-    {
-        parcel.writeString(getTelephone());
-        parcel.writeString(getUsername());
-        parcel.writeString(getPassword());
     }
 }

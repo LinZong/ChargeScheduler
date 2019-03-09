@@ -2,6 +2,7 @@ package nemesiss.scheduler.change.chargescheduler.Models.Response;
 
 public class TokenResponseModel extends CommonResponseModel
 {
+    private long UserID;
     private TokenResponseInfo TokenResponse;
 
     public TokenResponseInfo getTokenResponse()
@@ -12,6 +13,16 @@ public class TokenResponseModel extends CommonResponseModel
     public void setTokenResponse(TokenResponseInfo tokenResponse)
     {
         this.TokenResponse = tokenResponse;
+    }
+
+    public long getUserID()
+    {
+        return UserID;
+    }
+
+    public void setUserID(long userID)
+    {
+        UserID = userID;
     }
 }
 
