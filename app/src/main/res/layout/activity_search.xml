@@ -19,9 +19,9 @@
                 android:iconifiedByDefault="false"
                 android:queryHint="搜索附近的充电站..."
                 android:id="@+id/Search_SearchBar"
-                android:queryBackground="@null"
                 android:showDividers="none"
-                android:submitBackground="@null"
+                android:queryBackground="@color/white"
+                android:submitBackground="@color/white"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
         />

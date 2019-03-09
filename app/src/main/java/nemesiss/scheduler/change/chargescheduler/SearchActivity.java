@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.SearchView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.help.Inputtips;
@@ -26,9 +28,10 @@ import java.util.concurrent.TimeUnit;
 
 public class SearchActivity extends AppCompatActivity implements Inputtips.InputtipsListener
 {
-    private SearchView searchView;
-    private RecyclerView recyclerView;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.Search_SearchBar) SearchView searchView;
+    @BindView(R.id.Search_SearchResultRecycleView) RecyclerView recyclerView;
+    @BindView(R.id.SearchRefreshIcon) SwipeRefreshLayout swipeRefreshLayout;
+
     private LinearLayoutManager linearLayoutManager;
     private SearchResultAdapter resultAdapter;
     private List<Tip> SearchResult = new ArrayList<>();
@@ -52,18 +55,32 @@ public class SearchActivity extends AppCompatActivity implements Inputtips.Input
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        ButterKnife.bind(this);
 
-
-
-        swipeRefreshLayout = findViewById(R.id.SearchRefreshIcon);
+//        swipeRefreshLayout = findViewById(R.id.SearchRefreshIcon);
         swipeRefreshLayout.setEnabled(false);
-        searchView = findViewById(R.id.Search_SearchBar);
-        recyclerView = findViewById(R.id.Search_SearchResultRecycleView);
+//        searchView = findViewById(R.id.Search_SearchBar);
+//        recyclerView = findViewById(R.id.Search_SearchResultRecycleView);
         GetLocationFromMainActivity();
         linearLayoutManager = new LinearLayoutManager(SearchActivity.this);
         recyclerView.setLayoutManager(linearLayoutManager);
         resultAdapter = new SearchResultAdapter(SearchResult, searchView, SearchActivity.this);
         recyclerView.setAdapter(resultAdapter);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+        {
+            @Override
+            public boolean onQueryTextSubmit(String query)
+            {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText)
+            {
+                return false;
+            }
+        });
 
         RxSearchView.queryTextChangeEvents(searchView)
                 .observeOn(AndroidSchedulers.mainThread())

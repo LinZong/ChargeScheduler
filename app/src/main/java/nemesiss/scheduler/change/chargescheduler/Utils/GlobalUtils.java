@@ -4,6 +4,12 @@ import android.Manifest;
 import android.support.v7.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.text.TextUtils;
+import okhttp3.Request;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class GlobalUtils
 {
     public static ProgressDialog ShowProgressDialog(Context ctx,boolean Cancelable,String title,String content){
@@ -21,5 +27,23 @@ public class GlobalUtils
         dialog.setTitle(title);
         dialog.setMessage(content);
         return dialog;
+    }
+
+    public static Request.Builder BearerAuthRequest(String token)
+    {
+        return new Request.Builder().addHeader("Authorization","Bearer "+token);
+    }
+
+    public static SimpleDateFormat TokenDateFormatter()
+    {
+        return new SimpleDateFormat("yyyy/M/d HH:mm:ss", Locale.CHINA);
+    }
+    public static boolean ConfirmStringsAllNotEmpty(String[] strs)
+    {
+        for (int i = 0; i < strs.length; i++)
+        {
+            if(TextUtils.isEmpty(strs[i])) return false;
+        }
+        return true;
     }
 }

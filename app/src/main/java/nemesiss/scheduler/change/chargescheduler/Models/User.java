@@ -43,7 +43,6 @@ public class User implements Parcelable
     {
 
     }
-
     public User(String telephone,String username,String password)
     {
         setTelephone(telephone);

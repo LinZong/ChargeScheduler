@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.amap.api.services.help.Tip;
 import com.github.ikidou.fragmentBackHandler.BackHandlerHelper;
 import nemesiss.scheduler.change.chargescheduler.Fragments.ChainFragment;
@@ -28,10 +30,10 @@ public class ReservationTypeSelectActivity extends FragmentActivity implements C
         ChargeAllNight
     }
 
-    private TextView ReservationTypeTextView;
-    private TextView ReservationTargetChargerName;
-    private TextView ReservationTargerChargerAddress;
-    private TextView ReservationTargetChargerStatus;
+    @BindView(R.id.ReservationTypeTextView) TextView ReservationTypeTextView;
+    @BindView(R.id.ReservationTargetChargerName) TextView ReservationTargetChargerName;
+    @BindView(R.id.ReservationTargerChargerAddress) TextView ReservationTargerChargerAddress;
+    @BindView(R.id.ReservationTargetChargerStatus) TextView ReservationTargetChargerStatus;
 
     private int CurrentFragmentNum = 0;
     private List<Fragment> ReplaceFragmentList = new ArrayList<>();
@@ -44,17 +46,15 @@ public class ReservationTypeSelectActivity extends FragmentActivity implements C
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reservation_type_select);
+        ButterKnife.bind(this);
+
         current = (ChainFragment) getSupportFragmentManager().findFragmentById(R.id.ReservationFragment);
         WillGoToAddressTip = getIntent().getParcelableExtra("WillGoToAddressTip");
 
         //显示下方碎片
         ToNextFragment(new ReserverTypeFrag());
-        InitialViewBinding();
-
 
         SetWillGoToAddressTipInfo(WillGoToAddressTip);
-
-
     }
 
     private void InitialViewBinding()

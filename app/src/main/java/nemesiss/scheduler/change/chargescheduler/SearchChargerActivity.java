@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.design.widget.NavigationView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
@@ -279,13 +278,15 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
             {
                 if (resultCode == RESULT_OK)
                 {
+                    runOnUiThread(()->{
+                        for (int i = 0; i < 8; i++)
+                        {
+                            SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                        }
+                        AutoSearchChargerBtn.setVisibility(View.GONE);
+                    });
                     Tip tip = data.getParcelableExtra(getResources().getString(R.string.SearchLocationBackAddressName));
                     //给足够时间给面板展开
-                    SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                    SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                    SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                    SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                    AutoSearchChargerBtn.setVisibility(View.GONE);
                     //触发CurrentSearchTip订阅更新
                     setCurrentSearchTip(tip);
                 }
