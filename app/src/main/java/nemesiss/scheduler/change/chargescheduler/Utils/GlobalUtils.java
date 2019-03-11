@@ -1,11 +1,11 @@
 package nemesiss.scheduler.change.chargescheduler.Utils;
 
-import android.Manifest;
-import android.support.v7.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import okhttp3.Request;
+import okhttp3.Response;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -38,6 +38,12 @@ public class GlobalUtils
     {
         return new SimpleDateFormat("yyyy/M/d HH:mm:ss", Locale.CHINA);
     }
+
+    public static SimpleDateFormat BusyPeriodFormatter()
+    {
+        return new SimpleDateFormat("H:mm",Locale.CHINA);
+    }
+
     public static boolean ConfirmStringsAllNotEmpty(String[] strs)
     {
         for (int i = 0; i < strs.length; i++)
@@ -46,4 +52,10 @@ public class GlobalUtils
         }
         return true;
     }
+
+    public static boolean ConfirmResponseSuccessful(Response resp)
+    {
+        return resp!=null && resp.isSuccessful();
+    }
+
 }

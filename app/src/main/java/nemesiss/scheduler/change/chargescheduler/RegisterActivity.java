@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.jaredrummler.materialspinner.MaterialSpinner;
@@ -40,6 +41,10 @@ public class RegisterActivity extends AppCompatActivity
     CheckBox checkUserLaw;
     @BindView(R.id.Register_CarTypeSelect)
     MaterialSpinner spinner;
+    @BindView(R.id.NumberPlatePrefixSpinner) MaterialSpinner numberPlateSpinner;
+    @BindView(R.id.NumberPlatePostfix)
+    TextView numberPlatePostfixTextView;
+
     ProgressDialog RegisterProgress;
 
 
@@ -56,8 +61,9 @@ public class RegisterActivity extends AppCompatActivity
         carTypeList = new ArrayList<>();
         carTypeNameList = new ArrayList<>();
         RegisterProgress = GlobalUtils.ShowProgressDialog(RegisterActivity.this,false,"正在注册", "请稍后...");
-
         new LoadCanSelectCarType().execute();
+
+        numberPlateSpinner.setItems("粤A","粤B","粤G");
 
         //设置返回键显示逻辑
         setSupportActionBar(toolbar);
@@ -93,6 +99,7 @@ public class RegisterActivity extends AppCompatActivity
         ClearAllError();
         String pn = PhoneNumberEditText.getText().toString();
         String pw = PasswordNumberEditText.getText().toString();
+        String numberPlate = numberPlateSpinner.getItems().get(numberPlateSpinner.getSelectedIndex()).toString() + numberPlatePostfixTextView.getText().toString();
         boolean IsChecked = checkUserLaw.isChecked();
         int seletedId = -1;
         //TODO 完成CarType的显示
@@ -127,7 +134,7 @@ public class RegisterActivity extends AppCompatActivity
             //可以parse选择的id
             seletedId = carTypeList.get(spinner.getSelectedIndex()).getId();
             RegisterProgress.show();
-            new RegisterTask().execute(pn,pw,String.valueOf(seletedId));
+            new RegisterTask().execute(pn,pw,String.valueOf(seletedId),numberPlate);
         }
     }
     public boolean ValidatePassword(String passwd)
@@ -146,7 +153,8 @@ public class RegisterActivity extends AppCompatActivity
             String pn = strings[0];
             String pw = strings[1];
             int carType = Integer.parseInt(strings[2]);
-            return us.Register(pn,pw,carType);
+            String numberPlate = strings[3];
+            return us.Register(pn,pw,carType,numberPlate);
         }
 
         @Override

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -78,22 +79,31 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     private AMapLocationClientOption locationClientOption = null;
 
     //Activity自身控件引用
-    @BindView(R.id.map) MapView mMapView;
+    @BindView(R.id.map)
+    MapView mMapView;
     @Nullable
-    @BindView(R.id.FloatingChargeBtn) FloatingActionButton StartReservationBtn;
+    @BindView(R.id.FloatingChargeBtn)
+    FloatingActionButton StartReservationBtn;
     @Nullable
-    @BindView(R.id.AutoSearchChargerBtn) Button AutoSearchChargerBtn;
+    @BindView(R.id.AutoSearchChargerBtn)
+    Button AutoSearchChargerBtn;
     @Nullable
-    @BindView(R.id.Search_FakeSearchBar) SearchView SearchBar;
+    @BindView(R.id.Search_FakeSearchBar)
+    SearchView SearchBar;
     @Nullable
-    @BindView(R.id.Search_SearchBarParentCardView) CardView cardView;
+    @BindView(R.id.Search_SearchBarParentCardView)
+    CardView cardView;
     @Nullable
-    @BindView(R.id.Search_SearchMapConstraintLayout) ConstraintLayout Search_SearchMapConstraintLayout;
+    @BindView(R.id.Search_SearchMapConstraintLayout)
+    ConstraintLayout Search_SearchMapConstraintLayout;
     @Nullable
-    @BindView(R.id.RelaxLayout) SlidingUpPanelLayout SlidingUpPanel;
+    @BindView(R.id.RelaxLayout)
+    SlidingUpPanelLayout SlidingUpPanel;
 
-    @BindView(R.id.nav_selection_view) NavigationView LeftSlideNavMenu;
-    @BindView(R.id.Search_SearchMapDrawerLayout) DrawerLayout Search_SearchMapDrawerLayout;
+    @BindView(R.id.nav_selection_view)
+    NavigationView LeftSlideNavMenu;
+    @BindView(R.id.Search_SearchMapDrawerLayout)
+    DrawerLayout Search_SearchMapDrawerLayout;
 
     //状态量
     private boolean IsApplicationBoot = true;
@@ -103,6 +113,8 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     private Tip CurrentSearchTip = null;
     private HashMap<String, Marker> OnMapMarker = new HashMap<>();
     private Parcelable SlidingUpInitialStatus = null;
+    private boolean DoubleBackExit = false;
+    private Handler DoubleBackExitHandler = new Handler();
 
     //可观察对象
     private BehaviorSubject<Location> MyLocationObservable = BehaviorSubject.create();
@@ -151,11 +163,11 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         SlidingUpPanel.setAnchorPoint(0.40f);
         SlidingUpInitialStatus = SlidingUpPanel.onSaveInstanceState();
         SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-        new GetDetailedUserTask().execute();
+
 
         StartReservationBtn.setOnClickListener(view -> {
-            Intent it = new Intent(SearchChargerActivity.this,ReservationTypeSelectActivity.class);
-            it.putExtra("WillGoToAddressTip",CurrentSearchTip);
+            Intent it = new Intent(SearchChargerActivity.this, ReservationTypeSelectActivity.class);
+            it.putExtra("WillGoToAddressTip", CurrentSearchTip);
             startActivity(it);
         });
 
@@ -168,8 +180,6 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
                 SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
             }
         });
-
-
 
 
         Search_SearchMapConstraintLayout.requestFocus();
@@ -193,7 +203,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
 
         int magId = getResources().getIdentifier("android:id/search_mag_icon", null, null);
         ImageView magImage = (ImageView) SearchBar.findViewById(magId);
-        
+
         magImage.setOnClickListener(this::ExpandDrawerSlider);
         //设置订阅可观察对象的逻辑
         SubScribeMyLocationChanged();
@@ -206,21 +216,26 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
             SetLocationStyle();
             ConfigureLocationClient();
         }
+        new GetDetailedUserTask().execute();
     }
 
     private boolean OnNavigationItemSelected(MenuItem menuItem)
     {
         int clickId = menuItem.getItemId();
-        switch (clickId){
-            case R.id.nav_my_reservation:{
-                Log.v("NAVMENU","点击了我的预约");
+        switch (clickId)
+        {
+            case R.id.nav_my_reservation:
+            {
+                Log.v("NAVMENU", "点击了我的预约");
                 break;
             }
-            case R.id.nav_settings:{
-                Log.v("NAVMENU","点击了设置");
+            case R.id.nav_settings:
+            {
+                Log.v("NAVMENU", "点击了设置");
                 break;
             }
-            default:break;
+            default:
+                break;
         }
         LeftSlideNavMenu.setCheckedItem(R.id.menu_none);
         Search_SearchMapDrawerLayout.closeDrawers();
@@ -234,12 +249,12 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
 
     private void AttemptAutoSearchChargeStation(View view)
     {
-        AlertDialog.Builder bd = GlobalUtils.ShowAlertDialog(SearchChargerActivity.this,true,
+        AlertDialog.Builder bd = GlobalUtils.ShowAlertDialog(SearchChargerActivity.this, true,
                 "测试版提醒", "由于该版本为测试版, 因此并没有自动搜寻最佳充电站的逻辑. 点击确定后将跳转到预约界面.\n" +
                         "你也可以尝试着搜索一下充电站信息，体验指定充电站预约的过程.");
         bd.setPositiveButton("确定", (d, i) -> {
-            Intent it = new Intent(SearchChargerActivity.this,ReservationTypeSelectActivity.class);
-            it.putExtra("WillGoToAddressTip",CurrentSearchTip);
+            Intent it = new Intent(SearchChargerActivity.this, ReservationTypeSelectActivity.class);
+            it.putExtra("WillGoToAddressTip", CurrentSearchTip);
             startActivity(it);
         });
         bd.show();
@@ -290,7 +305,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
             {
                 if (resultCode == RESULT_OK)
                 {
-                    runOnUiThread(()->{
+                    runOnUiThread(() -> {
                         for (int i = 0; i < 8; i++)
                         {
                             SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
@@ -382,7 +397,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
                     public void call(Throwable throwable)
                     {
                         throwable.printStackTrace();
-                        Toast.makeText(SearchChargerActivity.this,throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SearchChargerActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -463,7 +478,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
                     }
                 }, (throwable) -> {
                     throwable.printStackTrace();
-                    Toast.makeText(SearchChargerActivity.this,throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SearchChargerActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -502,35 +517,36 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     }
 
 
-
-    class GetDetailedUserTask extends AsyncTask<Void,Void,Boolean>
+    class GetDetailedUserTask extends AsyncTask<Void, Void, Boolean>
     {
 
         private UserServices us;
         private OkHttpClient client;
+
         @Override
         protected Boolean doInBackground(Void... voids)
         {
-            List<Pair<String,String>> qs = new ArrayList<>();
-            qs.add(new Pair<>("UserId",String.valueOf(ChargerApplication.getLoginedUser().getId())));
+            List<Pair<String, String>> qs = new ArrayList<>();
+            qs.add(new Pair<>("UserId", String.valueOf(ChargerApplication.getLoginedUser().getId())));
             TokenResponseInfo tkInfo = ChargerApplication.getToken();
-            if(UserServices.CheckIfNeedToRefreshToken(tkInfo.getDateExpire()))
-            {
-                if(!us.RefreshToken()) return false;
-            }
-
-            List<Pair<String,String>> header = new ArrayList<>();
-            header.add(new Pair<>("Authorization","Bearer "+ChargerApplication.getToken().getToken()));
             try
             {
-                Response resp = CommonServices.SendGetRequest(client, RequestUrl.getUserInfoUrl(),qs,header);
-                if(resp!=null&&resp.isSuccessful())
+                if (CommonServices.CheckIfNeedToRefreshToken(tkInfo.getDateExpire()))
+                {
+                    if (!CommonServices.RefreshToken()) return false;
+                }
+
+                List<Pair<String, String>> header = new ArrayList<>();
+                header.add(new Pair<>("Authorization", "Bearer " + ChargerApplication.getToken().getToken()));
+
+                Response resp = CommonServices.SendGetRequest(client, RequestUrl.getUserInfoUrl(), qs, header);
+                if (resp != null && resp.isSuccessful())
                 {
                     String json = resp.body().string();
                     Gson gson = new Gson();
                     UserInfoResponseModel model = gson.fromJson(json, UserInfoResponseModel.class);
                     User user = model.getUserInformation();
-                    if(user != null)
+                    if (user != null)
                     {
                         User loginedUser = ChargerApplication.getLoginedUser();
                         loginedUser.setCarTypeId(user.getCarTypeId());
@@ -539,11 +555,11 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
                         return true;
                     }
                 }
-            } catch (IOException e)
+            } catch (Exception e)
             {
                 e.printStackTrace();
             }
-            Toast.makeText(SearchChargerActivity.this,"加载个人信息失败", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SearchChargerActivity.this, "加载个人信息失败", Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -559,7 +575,8 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         protected void onPostExecute(Boolean result)
         {
             super.onPostExecute(result);
-            if(result){
+            if (result)
+            {
                 TextView nickName = LeftSlideNavMenu.findViewById(R.id.NavHeaderUserNickname);
                 TextView pn = LeftSlideNavMenu.findViewById(R.id.NavHeaderPhoneNumber);
 
@@ -569,5 +586,27 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
             }
             client = null;//toggle gc.
         }
+    }
+
+
+    @Override
+    public void onBackPressed()
+    {
+        if(!DoubleBackExit) {
+            DoubleBackExit = true;
+            Toast.makeText(SearchChargerActivity.this,"再按一次退出程序", Toast.LENGTH_SHORT).show();
+            DoubleBackExitHandler.postDelayed(this::DoubleBackExitCallback,1000);
+        }
+        else
+        {
+            DoubleBackExitHandler.removeCallbacks(this::DoubleBackExitCallback);
+            finish();
+        }
+    }
+
+
+    private void DoubleBackExitCallback()
+    {
+        DoubleBackExit = false;
     }
 }

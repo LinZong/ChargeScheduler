@@ -20,7 +20,8 @@
 
     <android.support.constraint.ConstraintLayout android:layout_width="match_parent"
                                                  android:layout_height="match_parent"
-                                                 app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                                                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                                                 app:layout_anchorGravity="left|top" android:id="@+id/constraintLayout">
         <TextView
                 android:text="使用手机号注册"
                 android:layout_width="wrap_content"
@@ -35,9 +36,10 @@
                                                        android:layout_marginStart="8dp"
                                                        app:layout_constraintEnd_toEndOf="parent"
                                                        android:layout_marginEnd="8dp"
-                                                       android:layout_marginTop="80dp"
+                                                       android:layout_marginTop="40dp"
                                                        app:layout_constraintTop_toBottomOf="@+id/textView"
-                                                       android:id="@+id/textInputLayout2">
+                                                       android:id="@+id/textInputLayout2"
+                                                       app:layout_constraintHorizontal_bias="0.494">
             <EditText
                     android:drawableStart="@drawable/ic_phone_black_24dp"
                     android:drawablePadding="8dp"
@@ -60,7 +62,7 @@
                                                        android:layout_marginEnd="8dp"
                                                        android:id="@+id/textViewLayer"
                                                        app:layout_constraintTop_toBottomOf="@+id/textInputLayout2"
-                                                       android:layout_marginTop="24dp">
+                                                       android:layout_marginTop="16dp">
             <EditText
                     android:drawableStart="@drawable/ic_lock_black_24dp"
                     android:drawablePadding="8dp"
@@ -81,8 +83,25 @@
                                                           android:layout_marginStart="8dp"
                                                           android:id="@+id/Register_CarTypeSelect"
                                                           app:layout_constraintTop_toBottomOf="@+id/textViewLayer"
-                                                          android:layout_marginTop="24dp"/>
+                                                          android:layout_marginTop="16dp"/>
 
+        <com.jaredrummler.materialspinner.MaterialSpinner android:layout_width="74dp"
+                                                          android:layout_height="37dp"
+                                                          app:layout_constraintStart_toStartOf="@+id/Register_CarTypeSelect"
+                                                          android:layout_marginTop="16dp"
+                                                          app:layout_constraintTop_toBottomOf="@+id/Register_CarTypeSelect"
+                                                          android:id="@+id/NumberPlatePrefixSpinner"
+                                                          android:text="粤A"
+                                                          android:textSize="14sp"
+                                                          app:ms_padding_top="10dp"
+                                                          app:ms_padding_bottom="10dp"
+                                                          app:ms_padding_left="10dp"
+                                                          app:ms_padding_right="10dp"
+
+        app:ms_popup_padding_bottom="10dp"
+        app:ms_popup_padding_left="10dp"
+        app:ms_popup_padding_right="10dp"
+        app:ms_popup_padding_top="10dp"/>
         <Button
                 android:text="注册"
                 android:layout_width="0dp"
@@ -102,9 +121,19 @@
                 android:text="已阅读并同意用户协议"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/UserLawCheckBox" app:layout_constraintStart_toStartOf="@+id/Register_CarTypeSelect"
+                android:id="@+id/UserLawCheckBox"
                 android:layout_marginTop="8dp"
-                app:layout_constraintTop_toBottomOf="@+id/Register_CarTypeSelect"/>
+                app:layout_constraintTop_toBottomOf="@+id/NumberPlatePrefixSpinner"
+                app:layout_constraintStart_toStartOf="@+id/NumberPlatePrefixSpinner"/>
+        <EditText
+                android:layout_width="219dp"
+                android:layout_height="37dp"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/NumberPlatePostfix"
+                app:layout_constraintStart_toEndOf="@+id/NumberPlatePrefixSpinner" android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/NumberPlatePrefixSpinner" android:hint="输入车牌号"
+                android:textSize="14sp"/>
     </android.support.constraint.ConstraintLayout>
 
 </android.support.design.widget.CoordinatorLayout>

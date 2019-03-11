@@ -11,14 +11,20 @@ public class User
     private int CarTypeId;
     private int Credits;
     private String Password;
+    private String NumberPlate;
+    private int TodayFailedTime;
 
-    public User(){}
-    public User(String phone,long id,String password)
+    public User()
+    {
+    }
+
+    public User(String phone, long id, String password)
     {
         setPhone(phone);
         setId(id);
         setPassword(password);
     }
+
     public String getPassword()
     {
         return Password;
@@ -77,5 +83,25 @@ public class User
     public void setPassword(String password)
     {
         Password = password;
+    }
+
+    public int getTodayFailedTime()
+    {
+        return TodayFailedTime;
+    }
+
+    public String getNumberPlate()
+    {
+        return NumberPlate;
+    }
+
+    public void setNumberPlate(String numberPlate)
+    {
+        NumberPlate = numberPlate;
+    }
+
+    public void setTodayFailedTime(int todayFailedTime)
+    {
+        TodayFailedTime = todayFailedTime;
     }
 }

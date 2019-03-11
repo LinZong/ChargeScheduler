@@ -2,6 +2,7 @@ package nemesiss.scheduler.change.chargescheduler.Application;
 
 import android.app.Application;
 import android.content.Context;
+import nemesiss.scheduler.change.chargescheduler.Models.Response.BusyTimePeriod;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.TokenResponseInfo;
 import nemesiss.scheduler.change.chargescheduler.Models.User;
 import nemesiss.scheduler.change.chargescheduler.Services.Users.CarServices;
@@ -16,6 +17,9 @@ public class ChargerApplication extends Application
     //定义需要全局被引用的变量
     private static User LoginedUser;
     private static TokenResponseInfo token;
+
+    private static BusyTimePeriod busyTimePeriod;
+
     @Override
     public void onCreate()
     {
@@ -56,5 +60,15 @@ public class ChargerApplication extends Application
     public static TokenResponseInfo getToken()
     {
         return token;
+    }
+
+    public static BusyTimePeriod getBusyTimePeriod()
+    {
+        return busyTimePeriod;
+    }
+
+    public static void setBusyTimePeriod(BusyTimePeriod busyTimePeriod)
+    {
+        ChargerApplication.busyTimePeriod = busyTimePeriod;
     }
 }

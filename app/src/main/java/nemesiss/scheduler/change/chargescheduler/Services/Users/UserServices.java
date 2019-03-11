@@ -36,14 +36,14 @@ public class UserServices
     }
 
     // 这些服务写成同步的，到时候可以根据业务逻辑在上层做异步调用也无妨。
-    private OkHttpClient client;
+    private static OkHttpClient client;
 
     public UserServices()
     {
         client = new OkHttpClient.Builder().connectTimeout(4500, TimeUnit.MILLISECONDS).build();
     }
 
-    public LoginStatus Login(String PhoneNumber, String Password,boolean NeedEncryptPassword)
+    public static LoginStatus Login(String PhoneNumber, String Password,boolean NeedEncryptPassword)
     {
 
         // Try to encrypt password;
@@ -78,14 +78,14 @@ public class UserServices
                 default:break;
             }
         }
-        Log.e("USERLOGINERROR","无法得到登陆模型.检查网络连接.");
+        Log.e("UserServices","无法得到登陆模型.检查网络连接.");
         return LoginStatus.LOGIN_UNKNOWN_ERROR;
     }
 
-    public RegisterStatus Register(String PhoneNumber,String Password,int CarTypeId)
+    public static RegisterStatus Register(String PhoneNumber,String Password,int CarTypeId,String NumberPlate)
     {
         String encryptedPassword = HMacSha256.Encrypt(Password);
-        CommonResponseModel model = SendRegisterRequest(PhoneNumber,encryptedPassword,CarTypeId);
+        CommonResponseModel model = SendRegisterRequest(PhoneNumber,encryptedPassword,CarTypeId,NumberPlate);
         if(model!=null)
         {
             switch (model.getStatusCode()){
@@ -103,18 +103,18 @@ public class UserServices
                 default:break;
             }
         }
-        Log.e("USERREGISTERERROR","无法得到注册模型.检查网络连接.");
+        Log.e("UserServices","无法得到注册模型.检查网络连接.");
         return RegisterStatus.REGISTER_UNKNOWN_ERROR;
     }
 
-    private CommonResponseModel SendRegisterRequest(String PhoneNumber,String Password,int CarTypeId)
+    private static CommonResponseModel SendRegisterRequest(String PhoneNumber,String Password,int CarTypeId,String NumberPlate)
     {
 
         List<Pair<String,String>> body = new ArrayList<>();
         body.add(new Pair<>("phone",PhoneNumber));
         body.add(new Pair<>("password",Password));
         body.add(new Pair<>("cartypeid",String.valueOf(CarTypeId)));
-
+        body.add(new Pair<>("numberplate",NumberPlate));
         try
         {
             Response resp = CommonServices.SendPostRequest(client,RequestUrl.getRegisterUrl(),null,body);
@@ -126,12 +126,12 @@ public class UserServices
         } catch (IOException e)
         {
             e.printStackTrace();
-            Log.e("USERLOGINERROR", "User register failed. Result is : " + e.getMessage());
+            Log.e("UserServices", "User register failed. Result is : " + e.getMessage());
         }
         return null;
     }
 
-    private TokenResponseModel SendLoginRequest(String PhoneNumber, String Password, String Signature)
+    private static TokenResponseModel SendLoginRequest(String PhoneNumber, String Password, String Signature)
     {
 
 //        RequestBody requestBody = new MultipartBody.Builder()
@@ -159,26 +159,9 @@ public class UserServices
         } catch (IOException e)
         {
             e.printStackTrace();
-            Log.e("USERLOGINERROR", "User login failed. Result is : " + e.getMessage());
+            Log.e("UserServices", "User login failed. Result is : " + e.getMessage());
         }
         return null;
     }
 
-
-
-    public static boolean CheckIfNeedToRefreshToken(Date tokenTaggedExpireDate)
-    {
-        Date Now = new Date();
-        long tagged = tokenTaggedExpireDate.getTime();
-        long now = Now.getTime();
-        return  ((int)(tagged - now)/(1000*60)) < 5;
-    }
-
-    public boolean RefreshToken()
-    {
-        User us = ChargerApplication.getLoginedUser();
-        if(us==null) return false;
-        LoginStatus status = Login(us.getPhone(),us.getPassword(),false);
-        return status == LoginStatus.LOGIN_SUCCESSFUL;
-    }
 }

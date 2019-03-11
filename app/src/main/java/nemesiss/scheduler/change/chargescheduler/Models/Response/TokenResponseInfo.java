@@ -17,7 +17,7 @@ public class TokenResponseInfo
         return expire;
     }
 
-    public Date getDateExpire()
+    public Date getDateExpire() throws ParseException
     {
         if(expire!=null)
         {
@@ -26,12 +26,13 @@ public class TokenResponseInfo
             try
             {
                 d = fmt.parse(expire);
+                return d;
             } catch (ParseException e)
             {
                 e.printStackTrace();
-                Log.e("STRINGPARSETODAY", "过期时间解析到日期失败");
+                Log.e("TokenResponseInfo", "过期时间解析到日期失败");
+                throw e;
             }
-            return d;
         }
         return null;
     }

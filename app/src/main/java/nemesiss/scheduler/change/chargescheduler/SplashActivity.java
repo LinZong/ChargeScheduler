@@ -12,8 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
+import nemesiss.scheduler.change.chargescheduler.Services.Users.CommonServices;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalPermissions;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
+import okhttp3.OkHttpClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,10 +102,12 @@ public class SplashActivity extends AppCompatActivity
 
     class PrepareApplicationTask extends AsyncTask<Void,Void,Boolean>
     {
+        private OkHttpClient client;
 
         @Override
         protected Boolean doInBackground(Void ...voids)
         {
+            CommonServices.GetBusyTimePeriod(client);
             return GlobalPermissions.RequestAllPermissions(SplashActivity.this,SplashActivity.this);
         }
 
@@ -111,6 +115,13 @@ public class SplashActivity extends AppCompatActivity
         protected void onPostExecute(Boolean result)
         {
             if(result) JumpToMainActivity();
+        }
+
+        @Override
+        protected void onPreExecute()
+        {
+            super.onPreExecute();
+            client = new OkHttpClient();
         }
     }
 }

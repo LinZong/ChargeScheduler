@@ -36,7 +36,7 @@ public class CarServices
         } catch (IOException e)
         {
             e.printStackTrace();
-            Log.e("CARSERVICEERROR","请求所有车型号失败, 原因为"+e.getMessage());
+            Log.e("CarServices","请求所有车型号失败, 原因为"+e.getMessage());
         }
         return null;
     }

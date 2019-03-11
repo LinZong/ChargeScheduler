@@ -20,7 +20,7 @@ public class HMacSha256
 
         }
         catch (Exception e){
-            Log.e("HMACSHA256ERROR","加密失败,错误原因为 : "+e.getMessage());
+            Log.e("HMacSha256","加密失败,错误原因为 : "+e.getMessage());
         }
         return null;
     }
