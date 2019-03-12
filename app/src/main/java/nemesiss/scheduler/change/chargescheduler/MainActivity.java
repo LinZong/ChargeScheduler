@@ -1,34 +1,26 @@
 package nemesiss.scheduler.change.chargescheduler;
 
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.text.TextUtils;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
+import nemesiss.scheduler.change.chargescheduler.Constants.RequestUrl;
 import nemesiss.scheduler.change.chargescheduler.Services.Users.UserServices;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -38,9 +30,13 @@ public class MainActivity extends AppCompatActivity
     TextView passwordText;
     @BindView(R.id.Login_Coordinator)
     CoordinatorLayout coordinatorLayout;
+    @BindView(R.id.ChangeUrlEntry) Toolbar tb;
     private ProgressDialog LoginProgress;
 
     public static final String LOGIN_PERSISTENCE = "LoginPersistence";
+
+
+    private int index = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -58,6 +54,20 @@ public class MainActivity extends AppCompatActivity
 //        passwordText = findViewById(R.id.Login_PasswordTextInput);
 //        coordinatorLayout = findViewById(R.id.Login_Coordinator);
 
+        tb.setOnClickListener(this::EnterChangeUrlListener);
+
+    }
+
+    private void EnterChangeUrlListener(View view)
+    {
+        if(index == 6)
+        {
+            RequestUrl.SwitchRequestUrlHelper(View.inflate(MainActivity.this,R.layout.switch_api_address, null));
+        }
+        index = (index + 1)%7;
+        if(index > 3) {
+            Toast.makeText(MainActivity.this,"还有"+(7-index)+"步进入开发人员工具",Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void AttemptLogin(View view)

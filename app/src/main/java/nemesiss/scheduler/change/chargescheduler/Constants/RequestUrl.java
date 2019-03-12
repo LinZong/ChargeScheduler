@@ -1,40 +1,102 @@
 package nemesiss.scheduler.change.chargescheduler.Constants;
 
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
+import android.view.View;
+import android.widget.TextView;
+import com.jaredrummler.materialspinner.MaterialSpinner;
+import nemesiss.scheduler.change.chargescheduler.R;
+import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
+
 public class RequestUrl
 {
 
-    public static final String BaseUrl = "http://192.168.88.126:8970/";
-    //public static final String BaseUrl = "http://111.230.238.192/learn/";
+    public static final String[] BaseUrl = new String[]{"http://192.168.88.126:8970/","http://111.230.238.192/learn/",""};
     public static final String Login = "user/login";
     public static final String Register = "user/register";
     public static final String CarType = "CheckServer/GetCarList";
     public static final String UserInfo = "user/info";
     public static final String GetBusyTimePeriod = "CheckServer/GetBusyTimePeriod";
 
+    private static int CurrentMode = 0;
+
 
     public static String getLoginUrl()
     {
 
-        return BaseUrl + Login;
+        return getBaseUrl() + Login;
     }
 
     public static String getRegisterUrl()
     {
-        return BaseUrl + Register;
+        return getBaseUrl() + Register;
     }
 
     public static String getCarTypeUrl()
     {
-        return BaseUrl + CarType;
+        return getBaseUrl() + CarType;
     }
 
     public static String getUserInfoUrl()
     {
-        return BaseUrl + UserInfo;
+        return getBaseUrl() + UserInfo;
     }
 
     public static String getBusyTimePeriod()
     {
-        return BaseUrl + GetBusyTimePeriod;
+        return getBaseUrl() + GetBusyTimePeriod;
+    }
+
+    public static String getBaseUrl()
+    {
+        switch (CurrentMode){
+            case 0:
+                return BaseUrl[0];
+            case 1:
+                return BaseUrl[1];
+            case 2:
+                return BaseUrl[2];
+             default:
+                 return BaseUrl[1];
+        }
+    }
+
+    public static void SetCurrentUrlMode(int mode)
+    {
+        CurrentMode = mode;
+    }
+
+    public static int GetCurrentMode()
+    {
+        return CurrentMode;
+    }
+
+
+    public static void SwitchRequestUrlHelper(View dialogInnerView)
+    {
+        MaterialSpinner spinner = dialogInnerView.findViewById(R.id.ChangeUrlSpinner);
+        TextView textView = dialogInnerView.findViewById(R.id.CustomRequestUrl);
+        spinner.setItems(BaseUrl[0],BaseUrl[1],"自定义Base URL");
+        spinner.setSelectedIndex(CurrentMode);
+        if(CurrentMode==2) {
+            textView.setVisibility(View.VISIBLE);
+            textView.setText(BaseUrl[2]);
+        }
+        spinner.setOnItemSelectedListener((view, position, id, item) -> {
+            if(position == 2){
+                textView.setVisibility(View.VISIBLE);
+                textView.setText(BaseUrl[2]);
+            }
+            else textView.setVisibility(View.GONE);
+        });
+        AlertDialog.Builder bd = GlobalUtils.ShowAlertDialog(dialogInnerView.getContext(),true,"修改请求API地址 (开发人员专用)", null);
+        bd.setView(dialogInnerView);
+        bd.setPositiveButton("OK", (d, i) ->
+        {
+            BaseUrl[2] = textView.getText().toString();
+            SetCurrentUrlMode(spinner.getSelectedIndex());
+        });
+        bd.setNegativeButton("Cancel",(d,i)->{});
+        bd.show();
     }
 }

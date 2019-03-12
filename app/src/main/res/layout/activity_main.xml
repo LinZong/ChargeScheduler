@@ -13,7 +13,10 @@
                                            android:layout_height="?attr/actionBarSize"
                                            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                                            app:popupTheme="@style/Theme.AppCompat.Light"
-                                           app:title="用户登陆">
+                                           app:title="用户登陆"
+        android:clickable="true"
+        android:focusable="true"
+        android:id="@+id/ChangeUrlEntry">
 
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>

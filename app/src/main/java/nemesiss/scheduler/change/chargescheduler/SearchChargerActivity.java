@@ -588,7 +588,6 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         }
     }
 
-
     @Override
     public void onBackPressed()
     {
