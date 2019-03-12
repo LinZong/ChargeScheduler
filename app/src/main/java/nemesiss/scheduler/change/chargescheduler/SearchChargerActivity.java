@@ -226,7 +226,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         {
             case R.id.nav_my_reservation:
             {
-                Log.v("NAVMENU", "点击了我的预约");
+                startActivity(new Intent(SearchChargerActivity.this,MyReservationActivity.class));
                 break;
             }
             case R.id.nav_settings:
@@ -592,15 +592,22 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     @Override
     public void onBackPressed()
     {
-        if(!DoubleBackExit) {
-            DoubleBackExit = true;
-            Toast.makeText(SearchChargerActivity.this,"再按一次退出程序", Toast.LENGTH_SHORT).show();
-            DoubleBackExitHandler.postDelayed(this::DoubleBackExitCallback,1000);
+        if(Search_SearchMapDrawerLayout.isDrawerOpen(GravityCompat.START))
+        {
+            Search_SearchMapDrawerLayout.closeDrawers();
         }
         else
         {
-            DoubleBackExitHandler.removeCallbacks(this::DoubleBackExitCallback);
-            finish();
+            if(!DoubleBackExit) {
+                DoubleBackExit = true;
+                Toast.makeText(SearchChargerActivity.this,"再按一次退出程序", Toast.LENGTH_SHORT).show();
+                DoubleBackExitHandler.postDelayed(this::DoubleBackExitCallback,1000);
+            }
+            else
+            {
+                DoubleBackExitHandler.removeCallbacks(this::DoubleBackExitCallback);
+                finish();
+            }
         }
     }
 

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="0dp">
+    <android.support.constraint.ConstraintLayout android:layout_width="match_parent"
+                                                 android:layout_height="wrap_content">
+        <ImageView
+                android:layout_width="73dp"
+                android:layout_height="72dp" app:srcCompat="@drawable/station_icon"
+                android:id="@+id/Item_StationImage" android:layout_marginTop="8dp"
+                app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="8dp" app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="8dp" app:layout_constraintVertical_bias="0.0"/>
+        <TextView
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="16sp"
+                android:text="这里显示充电站名字"
+                android:layout_height="wrap_content"
+                android:id="@+id/Item_StationName"
+                app:layout_constraintTop_toTopOf="@+id/Item_StationImage"
+                app:layout_constraintStart_toEndOf="@+id/Item_StationImage"
+                android:layout_marginStart="8dp"
+                android:layout_width="0dp" app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp"/>
+        <TextView
+                android:textSize="12sp"
+                android:text="这里显示预约时间"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/Item_ReservationTime" android:layout_marginTop="4dp"
+                app:layout_constraintTop_toBottomOf="@+id/Item_StationName"
+                app:layout_constraintStart_toStartOf="@+id/Item_StationName"
+        />
+        <TextView
+                android:textSize="12sp"
+                android:text="即时预约"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/Item_ReservationType" app:layout_constraintEnd_toEndOf="@+id/Item_StationName"
+                app:layout_constraintTop_toBottomOf="@+id/Item_StationName" android:layout_marginEnd="8dp"/>
+        <TextView
+                android:textSize="12sp"
+                android:text="已完成/迟到/未完成提示"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/Item_ReservationStatus" android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/Item_ReservationTime"
+                app:layout_constraintStart_toStartOf="@+id/Item_ReservationTime"
+                app:layout_constraintBottom_toBottomOf="@+id/Item_StationImage"/>
+        <Button
+                android:minHeight="0dp"
+                android:padding="0dp"
+                android:textColor="#ff821b"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:text="查看详情"
+                android:layout_width="83dp"
+                android:layout_height="40dp"
+                android:id="@+id/Item_ShowReservationDetail"
+                app:layout_constraintTop_toBottomOf="@+id/Item_ReservationType"
+                app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
+        />
+    </android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>

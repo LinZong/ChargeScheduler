@@ -1,7 +1,6 @@
-package nemesiss.scheduler.change.chargescheduler.Fragments;
+package nemesiss.scheduler.change.chargescheduler.Fragments.DoReservationChain;
 
 import android.support.v7.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +12,7 @@ import android.widget.Button;
 import com.github.ikidou.fragmentBackHandler.BackHandlerHelper;
 import com.github.ikidou.fragmentBackHandler.FragmentBackHandler;
 import com.jaredrummler.materialspinner.MaterialSpinner;
+import nemesiss.scheduler.change.chargescheduler.Fragments.ChainFragment;
 import nemesiss.scheduler.change.chargescheduler.R;
 import nemesiss.scheduler.change.chargescheduler.ReservationTypeSelectActivity;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;

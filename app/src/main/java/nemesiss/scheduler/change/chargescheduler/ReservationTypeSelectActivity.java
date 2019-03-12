@@ -5,17 +5,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.amap.api.services.help.Tip;
 import com.github.ikidou.fragmentBackHandler.BackHandlerHelper;
 import nemesiss.scheduler.change.chargescheduler.Fragments.ChainFragment;
-import nemesiss.scheduler.change.chargescheduler.Fragments.ReserverTimeFrag;
-import nemesiss.scheduler.change.chargescheduler.Fragments.ReserverTypeFrag;
+import nemesiss.scheduler.change.chargescheduler.Fragments.DoReservationChain.ReserverTypeFrag;
 import nemesiss.scheduler.change.chargescheduler.Models.ChargeReservation;
 
 import java.util.ArrayList;

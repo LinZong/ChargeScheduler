@@ -86,6 +86,7 @@ public class CommonServices
 
     public static boolean CheckIfBusyPeriod(Date BusyBegin, Date BusyEnd)
     {
+
         Calendar c1 = Calendar.getInstance();
         Calendar c2 = Calendar.getInstance();
         Calendar nowCalender = Calendar.getInstance();
@@ -99,7 +100,20 @@ public class CommonServices
         int nowHour = nowCalender.get(Calendar.HOUR_OF_DAY);
         return c1Hour <= nowHour && nowHour <= c2Hour;
     }
-
+    public static boolean CheckIfBusyPeriodBasedOnPreset()
+    {
+        try
+        {
+            Date bg = ChargerApplication.getBusyTimePeriod().getBeginAsDate();
+            Date ed = ChargerApplication.getBusyTimePeriod().getEndAsDate();
+            return CheckIfBusyPeriod(bg,ed);
+        } catch (ParseException e)
+        {
+            e.printStackTrace();
+            Log.e("CommonServices","根据Application中的繁忙时间段检测是否为高峰期失败.");
+        }
+        return false;
+    }
     public static BusyTimePeriod GetBusyTimePeriod(OkHttpClient client)
     {
         Response resp = null;

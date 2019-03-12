@@ -1,4 +1,4 @@
-package nemesiss.scheduler.change.chargescheduler.Fragments;
+package nemesiss.scheduler.change.chargescheduler.Fragments.DoReservationChain;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,9 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import com.github.ikidou.fragmentBackHandler.FragmentBackHandler;
+import nemesiss.scheduler.change.chargescheduler.Fragments.ChainFragment;
 import nemesiss.scheduler.change.chargescheduler.R;
 import nemesiss.scheduler.change.chargescheduler.ReservationTypeSelectActivity;
+import nemesiss.scheduler.change.chargescheduler.Services.Users.CommonServices;
 
 public class ReserverTypeFrag extends Fragment implements ChainFragment, FragmentBackHandler
 {
@@ -36,17 +42,30 @@ public class ReserverTypeFrag extends Fragment implements ChainFragment, Fragmen
         }
     };
     private View view;
+    private Unbinder unbinder;
     private ReservationTypeSelectActivity activity;
-    private Button ChargeImmeBtn;
-    private Button ChargeNightBtn;
+    private boolean IsBusyTime = false;
+    @BindView(R.id.ChargeImmediateBtn) Button ChargeImmeBtn;
+    @BindView(R.id.ChargeAllNightBtn) Button ChargeNightBtn;
+    @BindView(R.id.IsBusyTimePeriodHint)
+    TextView IsBusyTimePeriodHint;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         view = inflater.inflate(R.layout.reserver_type_fragment,container,false);
         activity = (ReservationTypeSelectActivity) getActivity();
-        ChargeImmeBtn = view.findViewById(R.id.ChargeImmediateBtn);
-        ChargeNightBtn = view.findViewById(R.id.ChargeAllNightBtn);
+        //ButterKnife需要绑Fragment的时候要给当前view。
+        unbinder = ButterKnife.bind(this,view);
+
+        IsBusyTime = CommonServices.CheckIfBusyPeriodBasedOnPreset();
+        if(IsBusyTime)
+        {
+            IsBusyTimePeriodHint.setVisibility(View.VISIBLE);
+            ChargeNightBtn.setEnabled(false);
+        }
+
         ChargeImmeBtn.setOnClickListener(SelectTypeListener);
         ChargeNightBtn.setOnClickListener(SelectTypeListener);
         return view;
@@ -73,5 +92,12 @@ public class ReserverTypeFrag extends Fragment implements ChainFragment, Fragmen
     public boolean onBackPressed()
     {
         return false;
+    }
+
+    @Override
+    public void onDestroyView()
+    {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 }
