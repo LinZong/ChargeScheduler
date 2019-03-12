@@ -2,7 +2,9 @@ package nemesiss.scheduler.change.chargescheduler;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -38,6 +40,8 @@ public class MainActivity extends AppCompatActivity
     CoordinatorLayout coordinatorLayout;
     private ProgressDialog LoginProgress;
 
+    public static final String LOGIN_PERSISTENCE = "LoginPersistence";
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -46,9 +50,14 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.bind(this);
         //添加校验错误提示
         phoneText.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+
+        SharedPreferences sp = getSharedPreferences(LOGIN_PERSISTENCE,Context.MODE_PRIVATE);
+        String RememberedPhone = sp.getString("PhoneNumber","");
+        phoneText.setText(RememberedPhone);
 //        phoneText = findViewById(R.id.PhoneNumberTextInput);
 //        passwordText = findViewById(R.id.Login_PasswordTextInput);
 //        coordinatorLayout = findViewById(R.id.Login_Coordinator);
+
     }
 
     public void AttemptLogin(View view)
@@ -57,6 +66,7 @@ public class MainActivity extends AppCompatActivity
         LoginProgress.show();
         String un = phoneText.getText().toString();
         String pw = passwordText.getText().toString();
+        SaveLoginPhoneNumber(un);
         new ValidatePasswordTask().execute(un, pw);
     }
 
@@ -112,6 +122,15 @@ public class MainActivity extends AppCompatActivity
         {
             us = ChargerApplication.getUserServices();
         }
+    }
+
+
+
+    private void SaveLoginPhoneNumber(String PhoneNumber)
+    {
+        SharedPreferences.Editor editor = getSharedPreferences(LOGIN_PERSISTENCE, Context.MODE_PRIVATE).edit();
+        editor.putString("PhoneNumber",PhoneNumber);
+        editor.commit();
     }
 
 }

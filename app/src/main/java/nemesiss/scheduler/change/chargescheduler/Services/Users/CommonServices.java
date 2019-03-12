@@ -98,7 +98,7 @@ public class CommonServices
         int c1Hour = c1.get(Calendar.HOUR_OF_DAY);
         int c2Hour = c2.get(Calendar.HOUR_OF_DAY);
         int nowHour = nowCalender.get(Calendar.HOUR_OF_DAY);
-        return c1Hour <= nowHour && nowHour <= c2Hour;
+        return c1Hour <= nowHour && nowHour < c2Hour;
     }
     public static boolean CheckIfBusyPeriodBasedOnPreset()
     {
