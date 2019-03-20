@@ -5,13 +5,15 @@ import java.io.Serializable;
 public class ReservationInfo extends CommonResponseModel implements Serializable
 {
     private long Id;
+    private long UserId;
     private int ReservationType;
     private Long StartTime;
     private Long EndTime;
-    private int Isfinished;
+    private int IsFinished;
     private long RaiseReservationTime;
     private Integer UsedStationId;
     private Long ArrivedTime;
+    private int IsAssigned;
 
     public long getId()
     {
@@ -30,9 +32,9 @@ public class ReservationInfo extends CommonResponseModel implements Serializable
         return super.getStatusMessage();
     }
 
-    public int getIsfinished()
+    public int getIsFinished()
     {
-        return Isfinished;
+        return IsFinished;
     }
 
     public int getReservationType()
@@ -63,5 +65,15 @@ public class ReservationInfo extends CommonResponseModel implements Serializable
     public Long getStartTime()
     {
         return StartTime;
+    }
+
+    public int getIsAssigned()
+    {
+        return IsAssigned;
+    }
+
+    public long getUserId()
+    {
+        return UserId;
     }
 }

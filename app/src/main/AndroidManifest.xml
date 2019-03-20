@@ -34,8 +34,10 @@
                 android:theme="@style/SplashNoWhiteScreenStyle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+                <action android:name="nemesiss.scheduler.change.chargescheduler.loginActivityAction"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity">
@@ -51,6 +53,8 @@
         <activity android:name=".RegisterActivity">
         </activity>
         <activity android:name=".MyReservationActivity">
+        </activity>
+        <activity android:name=".TestFunctionActivity">
         </activity>
     </application>
 

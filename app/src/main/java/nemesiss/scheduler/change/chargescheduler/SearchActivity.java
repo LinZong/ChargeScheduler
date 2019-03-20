@@ -18,6 +18,11 @@ import com.amap.api.services.help.InputtipsQuery;
 import com.amap.api.services.help.Tip;
 import com.jakewharton.rxbinding.widget.RxSearchView;
 import nemesiss.scheduler.change.chargescheduler.Adapters.SearchResultAdapter;
+import nemesiss.scheduler.change.chargescheduler.Application.ChargeActivity;
+import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
+import nemesiss.scheduler.change.chargescheduler.Models.Response.Stations;
+import nemesiss.scheduler.change.chargescheduler.Services.Reservation.StationServices;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -26,17 +31,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class SearchActivity extends AppCompatActivity implements Inputtips.InputtipsListener
+public class SearchActivity extends ChargeActivity
 {
-    @BindView(R.id.Search_SearchBar) SearchView searchView;
-    @BindView(R.id.Search_SearchResultRecycleView) RecyclerView recyclerView;
-    @BindView(R.id.SearchRefreshIcon) SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.Search_SearchBar)
+    SearchView searchView;
+    @BindView(R.id.Search_SearchResultRecycleView)
+    RecyclerView recyclerView;
+    @BindView(R.id.SearchRefreshIcon)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     private LinearLayoutManager linearLayoutManager;
     private SearchResultAdapter resultAdapter;
-    private List<Tip> SearchResult = new ArrayList<>();
+    private List<Stations> SearchResult = new ArrayList<>();
     private String MyCityFromMain = null;
     private Location MyLocationFromMainActivity = null;
+    private StationServices stationServices = null;
+
 
     private void GetLocationFromMainActivity()
     {
@@ -44,9 +54,9 @@ public class SearchActivity extends AppCompatActivity implements Inputtips.Input
         MyLocationFromMainActivity = getIntent().getParcelableExtra(getResources().getString(R.string.MyLocation_Intent));
         String fakeSearchResult = getIntent().getStringExtra("FakeSearchBarResult");
         //将上次搜索结果带过来
-        if(!TextUtils.isEmpty(fakeSearchResult) && searchView != null)
+        if (!TextUtils.isEmpty(fakeSearchResult) && searchView != null)
         {
-            searchView.setQuery(fakeSearchResult,false);
+            searchView.setQuery(fakeSearchResult, false);
         }
     }
 
@@ -57,10 +67,9 @@ public class SearchActivity extends AppCompatActivity implements Inputtips.Input
         setContentView(R.layout.activity_search);
         ButterKnife.bind(this);
 
-//        swipeRefreshLayout = findViewById(R.id.SearchRefreshIcon);
+        stationServices = ChargerApplication.getStationServices();
+
         swipeRefreshLayout.setEnabled(false);
-//        searchView = findViewById(R.id.Search_SearchBar);
-//        recyclerView = findViewById(R.id.Search_SearchResultRecycleView);
         GetLocationFromMainActivity();
         linearLayoutManager = new LinearLayoutManager(SearchActivity.this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -85,7 +94,6 @@ public class SearchActivity extends AppCompatActivity implements Inputtips.Input
         RxSearchView.queryTextChangeEvents(searchView)
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(searchViewQueryTextEvent -> {
-                    Log.d("THREADINFO","第一次map运行在"+Thread.currentThread().getId());
                     swipeRefreshLayout.setEnabled(true);
                     swipeRefreshLayout.setRefreshing(true);
                     return searchViewQueryTextEvent;
@@ -94,66 +102,21 @@ public class SearchActivity extends AppCompatActivity implements Inputtips.Input
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.newThread())
                 .map(
-
                         searchViewQueryTextEvent -> {
-                            Log.d("THREADINFO","第2次map运行在"+Thread.currentThread().getId());
                             boolean IsSubmitted = searchViewQueryTextEvent.isSubmitted();
                             String QueryText = searchViewQueryTextEvent.queryText().toString();
-                            InputtipsQuery inputtipsQuery = null;
-                            if (!TextUtils.isEmpty(QueryText))
-                            {
-                                inputtipsQuery = new InputtipsQuery(QueryText, MyCityFromMain);
-                                if(MyLocationFromMainActivity!=null)
-                                {
-                                    inputtipsQuery.setLocation(new LatLonPoint(
-                                            MyLocationFromMainActivity.getLatitude(),
-                                            MyLocationFromMainActivity.getLongitude()));
-                                }
-                            }
-                            return inputtipsQuery;
-                        })
-                .map(
-                        (Func1<InputtipsQuery, List<Tip>>) inputtipsQuery -> {
-                            Log.d("THREADINFO","第3次map运行在"+Thread.currentThread().getId());
-                            if (inputtipsQuery != null)
-                            {
-                                Inputtips it = new Inputtips(SearchActivity.this, inputtipsQuery);
-                                try
-                                {
-                                    return it.requestInputtips();
-                                } catch (AMapException e)
-                                {
-                                    e.printStackTrace();
-                                }
-                            }
-                            return new ArrayList<>();
-                        })
+                            List<Stations> result = stationServices.ShowInputTips(QueryText);
+                            return (result);
+                        }
+                )
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(tips -> {
-                    Log.d("THREADINFO","最终subscribe运行在"+Thread.currentThread().getId());
                     SearchResult.clear();
                     SearchResult.addAll(tips);
                     resultAdapter.notifyDataSetChanged();
                     swipeRefreshLayout.setRefreshing(false);
                     swipeRefreshLayout.setEnabled(false);
                 });
-    }
-
-    @Override
-    public void onGetInputtips(List<Tip> list, int i)
-    {
-        if (i == 1000)
-        {
-            Log.d("INPUTTIPS", "成功");
-            for (Tip tip : list)
-            {
-                Log.d("INPUTTIPS", tip.getAdcode());
-                Log.d("INPUTTIPS", tip.getAddress());
-                Log.d("INPUTTIPS", tip.getDistrict());
-                Log.d("INPUTTIPS", tip.getName());
-                Log.d("INPUTTIPS", tip.getPoiID());
-            }
-        }
     }
 
     @Override

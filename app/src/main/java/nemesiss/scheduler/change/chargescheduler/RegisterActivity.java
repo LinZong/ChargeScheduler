@@ -12,13 +12,11 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.jaredrummler.materialspinner.MaterialSpinner;
+import nemesiss.scheduler.change.chargescheduler.Application.ChargeActivity;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.CarType;
 import nemesiss.scheduler.change.chargescheduler.Services.Users.CarServices;
@@ -29,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class RegisterActivity extends AppCompatActivity
+public class RegisterActivity extends ChargeActivity
 {
 
     @BindView(R.id.Register_Toolbar) Toolbar toolbar;
@@ -225,6 +223,10 @@ public class RegisterActivity extends AppCompatActivity
                 }
                 spinner.setItems(carTypeNameList);
                 spinner.setSelectedIndex(0);
+            }
+            else
+            {
+                Toast.makeText(RegisterActivity.this,"无法获得支持的汽车列表,注册功能将不可用.",Toast.LENGTH_SHORT).show();
             }
         }
     }

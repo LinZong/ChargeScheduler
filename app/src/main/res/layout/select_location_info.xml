@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             android:layout_width="match_parent"
+                                             xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
                                              android:layout_height="match_parent"
                                              xmlns:app="http://schemas.android.com/apk/res-auto">
     <TextView
@@ -30,16 +30,47 @@
     />
     <TextView
             android:text="广东省广州市番禺区外环东路382号"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/ReservationTargerChargerAddress" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/ReservationTargetChargerName" app:layout_constraintStart_toStartOf="@+id/ReservationTargetChargerName"
-    />
+            app:layout_constraintTop_toBottomOf="@+id/ReservationTargetChargerName"
+            app:layout_constraintStart_toStartOf="@+id/ReservationTargetChargerName"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp"
+            app:layout_constraintHorizontal_bias="0.0" android:layout_marginStart="16dp"/>
     <TextView
-            android:text="快充插头: 0/18   慢充插头: 0/40"
+            android:text="当前可用桩位:"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/ReservationTargetChargerStatus" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/ReservationTargerChargerAddress" app:layout_constraintStart_toStartOf="@+id/ReservationTargerChargerAddress"
+            app:layout_constraintTop_toBottomOf="@+id/ReservationTargerChargerAddress"
+            app:layout_constraintStart_toStartOf="@+id/ReservationTargerChargerAddress"
+    />
+    <TextView
+            android:text="即时充电桩:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView9" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/ReservationTargetChargerStatus"
+            app:layout_constraintStart_toStartOf="@+id/ReservationTargetChargerStatus"
+    />
+    <TextView
+            android:text="0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/InstanceCount" app:layout_constraintStart_toEndOf="@+id/textView9"
+            app:layout_constraintBottom_toBottomOf="@+id/textView9" android:layout_marginStart="4dp"/>
+    <TextView
+            android:text="延时充电桩:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView11" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/textView9" app:layout_constraintStart_toStartOf="@+id/textView9"
+    />
+    <TextView
+            android:text="0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/DelayCount" app:layout_constraintStart_toEndOf="@+id/textView11"
+            android:layout_marginStart="4dp" app:layout_constraintBottom_toBottomOf="@+id/textView11"
     />
 </android.support.constraint.ConstraintLayout>

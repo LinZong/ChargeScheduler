@@ -11,14 +11,18 @@ import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
 public class RequestUrl
 {
 
-    public static final String[] BaseUrl = new String[]{"http://192.168.88.126:8970/","http://111.230.238.192/learn/",""};
+    public static final String[] BaseUrl = new String[]{"http://192.168.43.223:8970/","http://111.230.238.192/learn/",""};
     public static final String Login = "user/login";
     public static final String Register = "user/register";
     public static final String CarType = "CheckServer/GetCarList";
     public static final String UserInfo = "user/info";
     public static final String GetBusyTimePeriod = "CheckServer/GetBusyTimePeriod";
+    public static final String GetAllStations = "CheckServer/Stations/";
+    public static final String CreateNewReservation = "reservation/create";
+    public static final String SetReservationState = "reservation/update";
+    public static final String GetMyReservations = "reservation/info/";
 
-    private static int CurrentMode = 0;
+    private static int CurrentMode = 1;
 
 
     public static String getLoginUrl()
@@ -46,6 +50,16 @@ public class RequestUrl
     {
         return getBaseUrl() + GetBusyTimePeriod;
     }
+
+    public static String getAllStations() {return  getBaseUrl() + GetAllStations;}
+
+    public static String getSelectedStation(int id) {return getAllStations() + id;}
+
+    public static String getCreateNewReservation() {return getBaseUrl() + CreateNewReservation;}
+    public static String getSetReservationState() {return getBaseUrl() + SetReservationState;}
+    public static String getMyReservations(){return getBaseUrl() + GetMyReservations;}
+
+
 
     public static String getBaseUrl()
     {

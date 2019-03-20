@@ -9,8 +9,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
+import nemesiss.scheduler.change.chargescheduler.Models.ReservationStatus;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.ReservationInfo;
 import nemesiss.scheduler.change.chargescheduler.R;
+import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
 
 import java.util.List;
 
@@ -34,7 +37,34 @@ public class ReservationItemAdapter extends RecyclerView.Adapter<ReservationItem
     {
         ReservationInfo res = reservationInfoList.get(position);
 
+        Integer statId = res.getUsedStationId();
+        if(statId!=null)
+        {
+            holder.StationName.setText(ChargerApplication.getStationServices().GetStationInfo(statId).getName());
+        }
+        else {
+            holder.StationName.setText("此预约未指派充电站");
+        }
+        switch (res.getIsFinished()){
+            case 0:
+                holder.ReservationStatus.setText("尚未到达");
+                break;
+            case 1:
+                holder.ReservationStatus.setText("完成充电");
+                break;
+            case 2:
+                holder.ReservationStatus.setText("迟到");
+                break;
+            case 3:
+                holder.ReservationStatus.setText("被用户取消");
+                break;
+            case 4:
+                holder.ReservationStatus.setText("被系统取消");
+                break;
+        }
+        holder.ReservationTime.setText(GlobalUtils.TokenDateFormatter().format(GlobalUtils.UnixStamp2Date(res.getRaiseReservationTime())));
     }
+
     @Override
     public int getItemCount()
     {

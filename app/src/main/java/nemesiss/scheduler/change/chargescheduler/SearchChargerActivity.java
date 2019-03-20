@@ -8,14 +8,14 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
-import android.support.design.widget.NavigationView;
 import android.util.Log;
 import android.util.Pair;
+import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
@@ -38,23 +38,24 @@ import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeQuery;
-import com.amap.api.services.help.Tip;
 import com.amap.api.services.route.DistanceItem;
 import com.amap.api.services.route.DistanceResult;
 import com.amap.api.services.route.DistanceSearch;
 import com.google.gson.Gson;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import nemesiss.scheduler.change.chargescheduler.Application.ChargeActivity;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
+import nemesiss.scheduler.change.chargescheduler.Constants.GlobalVariables;
 import nemesiss.scheduler.change.chargescheduler.Constants.RequestUrl;
 import nemesiss.scheduler.change.chargescheduler.Models.City;
+import nemesiss.scheduler.change.chargescheduler.Models.Response.Stations;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.TokenResponseInfo;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.UserInfoResponseModel;
-import nemesiss.scheduler.change.chargescheduler.Models.TipWithDistance;
 import nemesiss.scheduler.change.chargescheduler.Models.User;
+import nemesiss.scheduler.change.chargescheduler.Services.Reservation.StationServices;
 import nemesiss.scheduler.change.chargescheduler.Services.Users.CommonServices;
 import nemesiss.scheduler.change.chargescheduler.Services.Users.UserServices;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
-import nemesiss.scheduler.change.chargescheduler.Constants.GlobalVariables;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 import rx.Observable;
@@ -64,14 +65,16 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 
-public class SearchChargerActivity extends AppCompatActivity implements AMapLocationListener, AMap.OnMyLocationChangeListener
+public class SearchChargerActivity extends ChargeActivity implements AMapLocationListener, AMap.OnMyLocationChangeListener
 {
+    //注入自身的一些服务
+    private StationServices stationServices;
+
     //高德地图相关组件引用
     private UiSettings mUiSettings = null;
     private AMap aMap = null;
@@ -110,7 +113,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
     private boolean IsFirstTimeShowSlideLayout = true;
     private Location MyLocation = null;
     private City MyLocationCity = new City();
-    private Tip CurrentSearchTip = null;
+    private Stations CurrentSearchStation = null;
     private HashMap<String, Marker> OnMapMarker = new HashMap<>();
     private Parcelable SlidingUpInitialStatus = null;
     private boolean DoubleBackExit = false;
@@ -118,7 +121,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
 
     //可观察对象
     private BehaviorSubject<Location> MyLocationObservable = BehaviorSubject.create();
-    private BehaviorSubject<Tip> CurrentSearchTipObservable = BehaviorSubject.create();
+    private BehaviorSubject<Stations> CurrentSearchStationObservable = BehaviorSubject.create();
 
     //触发订阅
     private void setMyLocation(Location myLocation)
@@ -127,10 +130,10 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         MyLocationObservable.onNext(MyLocation);
     }
 
-    private void setCurrentSearchTip(Tip newTip)
+    private void setCurrentSearchStation(Stations newTip)
     {
-        CurrentSearchTip = newTip;
-        CurrentSearchTipObservable.onNext(newTip);
+        CurrentSearchStation = newTip;
+        CurrentSearchStationObservable.onNext(newTip);
     }
 
     //一些get/set
@@ -139,9 +142,9 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         return MyLocationObservable;
     }
 
-    public BehaviorSubject<Tip> getCurrentSearchTipObservable()
+    public BehaviorSubject<Stations> getCurrentSearchStationObservable()
     {
-        return CurrentSearchTipObservable;
+        return CurrentSearchStationObservable;
     }
 
     @Override
@@ -150,36 +153,22 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_charger);
         ButterKnife.bind(this);
-//        mMapView = (MapView) findViewById(R.id.map);
-//        SearchBar = findViewById(R.id.Search_FakeSearchBar);
-//        cardView = findViewById(R.id.Search_SearchBarParentCardView);
-//        Search_SearchMapConstraintLayout = findViewById(R.id.Search_SearchMapConstraintLayout);
-//        AutoSearchChargerBtn = findViewById(R.id.AutoSearchChargerBtn);
-//        StartReservationBtn = findViewById(R.id.FloatingChargeBtn);
 
-//        SlidingUpPanel = findViewById(R.id.RelaxLayout);
+        stationServices = ChargerApplication.getStationServices();
 
         LeftSlideNavMenu.setNavigationItemSelectedListener(this::OnNavigationItemSelected);
         SlidingUpPanel.setAnchorPoint(0.40f);
         SlidingUpInitialStatus = SlidingUpPanel.onSaveInstanceState();
         SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
 
-
         StartReservationBtn.setOnClickListener(view -> {
-            Intent it = new Intent(SearchChargerActivity.this, ReservationTypeSelectActivity.class);
-            it.putExtra("WillGoToAddressTip", CurrentSearchTip);
-            startActivity(it);
+                Intent it = new Intent(SearchChargerActivity.this, ReservationTypeSelectActivity.class);
+                it.putExtra("WillGoToStations",CurrentSearchStation);
+                startActivity(it);
         });
 
-        Log.d("THREADINFO", "上面的设置运行在" + Thread.currentThread().getId());
-        SlidingUpPanel.setFadeOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-            }
-        });
+
+        SlidingUpPanel.setFadeOnClickListener(v -> SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN));
 
 
         Search_SearchMapConstraintLayout.requestFocus();
@@ -207,7 +196,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         magImage.setOnClickListener(this::ExpandDrawerSlider);
         //设置订阅可观察对象的逻辑
         SubScribeMyLocationChanged();
-        SubScribeCurrentSearchTipChanged();
+        SubScribeCurrentSearchStationChanged();
 
         mMapView.onCreate(savedInstanceState);
         if (aMap == null)
@@ -231,7 +220,9 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
             }
             case R.id.nav_settings:
             {
-                Log.v("NAVMENU", "点击了设置");
+                ChargeActivity.FinishAllActivities();
+                Intent it = new Intent("nemesiss.scheduler.change.chargescheduler.loginActivityAction");
+                startActivity(it);
                 break;
             }
             default:
@@ -249,15 +240,10 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
 
     private void AttemptAutoSearchChargeStation(View view)
     {
-        AlertDialog.Builder bd = GlobalUtils.ShowAlertDialog(SearchChargerActivity.this, true,
-                "测试版提醒", "由于该版本为测试版, 因此并没有自动搜寻最佳充电站的逻辑. 点击确定后将跳转到预约界面.\n" +
-                        "你也可以尝试着搜索一下充电站信息，体验指定充电站预约的过程.");
-        bd.setPositiveButton("确定", (d, i) -> {
+
             Intent it = new Intent(SearchChargerActivity.this, ReservationTypeSelectActivity.class);
-            it.putExtra("WillGoToAddressTip", CurrentSearchTip);
+            it.putExtra("ShouldJudgeStations", true);
             startActivity(it);
-        });
-        bd.show();
 
     }
 
@@ -281,7 +267,6 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         locationClientOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
         locationClientOption.setOnceLocation(true);
         locationClient.setLocationOption(locationClientOption);
-        //locationClient.startLocation();
     }
 
     private void SetLocationStyle()
@@ -312,10 +297,10 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
                         }
                         AutoSearchChargerBtn.setVisibility(View.GONE);
                     });
-                    Tip tip = data.getParcelableExtra(getResources().getString(R.string.SearchLocationBackAddressName));
+                    Stations stations = (Stations)data.getSerializableExtra(getResources().getString(R.string.SearchLocationBackAddressName));
                     //给足够时间给面板展开
                     //触发CurrentSearchTip订阅更新
-                    setCurrentSearchTip(tip);
+                    setCurrentSearchStation(stations);
                 }
                 break;
             }
@@ -388,92 +373,163 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
                     if (regeocodeAddress != null && MyLocationCity != null)
                     {
 
+
                         MyLocationCity.setCityCode(regeocodeAddress.getCityCode());
                         MyLocationCity.setCityName(regeocodeAddress.getCity());
                     }
-                }, new Action1<Throwable>()
+                }, throwable -> {
+                    throwable.printStackTrace();
+                    Toast.makeText(SearchChargerActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+
+        getMyLocationObservable()
+                .observeOn(Schedulers.newThread())
+                .flatMap(new Func1<Location, Observable<DistanceResult>>()
                 {
                     @Override
-                    public void call(Throwable throwable)
+                    public Observable<DistanceResult> call(Location location)
                     {
-                        throwable.printStackTrace();
-                        Toast.makeText(SearchChargerActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                        DistanceSearch ds = new DistanceSearch(SearchChargerActivity.this);
+                        DistanceSearch.DistanceQuery dq = new DistanceSearch.DistanceQuery();
+                        List<LatLonPoint> originPoints = new ArrayList<>();
+
+                        SparseArray<Stations> stationsList = stationServices.getAllStationsList();
+                        int listLen = stationsList.size();
+                        //拿到全部充电站的坐标地址
+                        for (int i = 0; i < listLen; i++)
+                        {
+                            Stations s = stationsList.valueAt(i);
+                            originPoints.add(new LatLonPoint(s.getLatitude(),s.getLongitude()));
+                        }
+                        //计算自己跟充电扎之间的距离
+
+                        LatLonPoint myPoint = new LatLonPoint(location.getLatitude(),location.getLongitude());
+
+
+                        dq.setOrigins(originPoints);
+                        dq.setDestination(myPoint);
+                        dq.setType(DistanceSearch.TYPE_DRIVING_DISTANCE);
+                        try {
+                            DistanceResult result = ds.calculateRouteDistance(dq);
+                            return Observable.just(result);
+                        } catch (AMapException e)
+                        {
+                            e.printStackTrace();
+                            return Observable.error(new Exception("服务器返回了错误的结果" + e.getErrorMessage()));
+                        }
                     }
+                })
+                .subscribe(new Action1<DistanceResult>()
+                {
+                    @Override
+                    public void call(DistanceResult distanceResult)
+                    {
+                        List<DistanceItem> items = distanceResult.getDistanceResults();
+                        SparseArray<Stations> stats = stationServices.getAllStationsList();
+                        int len = items.size();
+                        for (int i = 0; i < len; i++)
+                        {
+                            Stations s = stats.valueAt(i);
+                            s.setDistanceBetweenMe((int)items.get(i).getDistance());
+                        }
+                        ChargerApplication.FeaturesSwitcher[0] = true;
+                    }
+                }, th ->{
+                    runOnUiThread(()->{
+                        ChargerApplication.FeaturesSwitcher[0] = false;
+                        Toast.makeText(SearchChargerActivity.this,"当前位置得到了更新,但无法计算距离各个充电站的位置，预约功能将受到影响。",Toast.LENGTH_SHORT).show();
+                    });
                 });
+
+
     }
 
-    private void SubScribeCurrentSearchTipChanged()
+
+
+
+    private void SubScribeCurrentSearchStationChanged()
     {
-        getCurrentSearchTipObservable()
+        getCurrentSearchStationObservable()
                 .observeOn(Schedulers.newThread())
+                .map(selectedStat -> {
+                    return stationServices.UpdateStationInfo(selectedStat.getId());
+                })
                 .flatMap(
-                        (Func1<Tip, Observable<TipWithDistance>>) tip ->
+                        (Func1<Stations, Observable<DistanceResult>>) tip ->
                         {
-                            LatLonPoint llp = tip.getPoint();//目的地
+                                LatLonPoint llp = new LatLonPoint(tip.getLatitude(),tip.getLongitude());
+                                DistanceSearch ds = new DistanceSearch(SearchChargerActivity.this);
+                                DistanceSearch.DistanceQuery distanceQuery = new DistanceSearch.DistanceQuery();
+                                //设置自己的坐标
+                                List<LatLonPoint> originPoints = new ArrayList<>();
+                                originPoints.add(new LatLonPoint(MyLocation.getLatitude(), MyLocation.getLongitude()));
+                                distanceQuery.setOrigins(originPoints);
+                                distanceQuery.setDestination(llp);
 
-                            DistanceSearch ds = new DistanceSearch(SearchChargerActivity.this);
+                                distanceQuery.setType(DistanceSearch.TYPE_DRIVING_DISTANCE);
+                                try
+                                {
+                                    DistanceResult result = ds.calculateRouteDistance(distanceQuery);
+                                    return Observable.just(result);
 
-                            DistanceSearch.DistanceQuery distanceQuery = new DistanceSearch.DistanceQuery();
-                            List<LatLonPoint> originPoints = new ArrayList<>();
-                            originPoints.add(new LatLonPoint(MyLocation.getLatitude(), MyLocation.getLongitude()));
-                            distanceQuery.setOrigins(originPoints);
-                            distanceQuery.setDestination(llp);
-                            distanceQuery.setType(DistanceSearch.TYPE_DRIVING_DISTANCE);
-                            try
-                            {
-                                DistanceResult result = ds.calculateRouteDistance(distanceQuery);
-                                TipWithDistance twd = TipWithDistance.TransfromTipToTipWithDistance(tip, result.getDistanceResults().get(0));
-                                return Observable.just(twd);
-
-                            } catch (AMapException e)
-                            {
-                                //TODO 添加错误处理逻辑
-                                e.printStackTrace();
-                                return Observable.error(new Exception("服务器返回了错误的结果" + e.getErrorMessage()));
-                            }
-
+                                } catch (AMapException e)
+                                {
+                                    //TODO 添加错误处理逻辑
+                                    e.printStackTrace();
+                                    return Observable.error(new Exception("服务器返回了错误的结果" + e.getErrorMessage()));
+                                }
+                                catch (Exception e)
+                                {
+                                    e.printStackTrace();
+                                    return Observable.error(e);
+                                }
                         })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<TipWithDistance>()
+                .subscribe(new Action1<DistanceResult>()
                 {
                     @Override
-                    public void call(TipWithDistance tip)
+                    public void call(DistanceResult dist)
                     {
 
                         //绘制Marker
-                        if (aMap != null && tip != null)
+                        if (aMap != null && dist != null)
                         {
                             //设置当前搜索的条目
-                            SearchBar.setQuery(tip.getName(), false);
+                            Stations currStation = CurrentSearchStation;
+
+                            SearchBar.setQuery(currStation.getName(), false);
 
                             //先清除掉之前的标记
                             aMap.clear(true);
                             OnMapMarker.clear();
 
-                            String detailedAddress = tip.getDistrict() + tip.getAddress();
-                            LatLng lt = new LatLng(tip.getPoint().getLatitude(), tip.getPoint().getLongitude());
+                            String detailedAddress = currStation.getCity() + currStation.getAddress();
+                            LatLng lt = new LatLng(currStation.getLatitude(), currStation.getLongitude());
                             final Marker marker = aMap.addMarker(new MarkerOptions()
                                     .position(lt)
-                                    .title(tip.getName())
+                                    .title(currStation.getName())
                                     .snippet(detailedAddress)
                                     .draggable(false));
                             //把摄像机移动到定位中心点
                             aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lt, 17));
-                            OnMapMarker.put(tip.getName(), marker);
+                            OnMapMarker.put(currStation.getName(), marker);
 
                             //获取位置信息
-                            DistanceItem dis = tip.getDistanceResult();
+                            DistanceItem dis = dist.getDistanceResults().get(0);
                             TextView addr = SlidingUpPanel.findViewById(R.id.SlideAddress);
                             TextView locName = SlidingUpPanel.findViewById(R.id.SlideLocationName);
                             TextView disTextView = SlidingUpPanel.findViewById(R.id.SlideDistance);
+                            TextView instanceCount = SlidingUpPanel.findViewById(R.id.SlideInstanceCount);
+                            TextView delayCount = SlidingUpPanel.findViewById(R.id.SlideDelayCount);
                             if (dis != null)
                             {
                                 String disResult = String.format("距离您 %.2f 公里", (double) dis.getDistance() / 1000);
                                 disTextView.setText(disResult);
                             }
-                            //展现SlideUpLayout.
-                            locName.setText(tip.getName());
+                            locName.setText(currStation.getName());
                             addr.setText(detailedAddress);
+                            instanceCount.setText(String.valueOf(currStation.getAvailableInstance()));
+                            delayCount.setText(String.valueOf(currStation.getAvailableDelay()));
                         }
                     }
                 }, (throwable) -> {
@@ -568,7 +624,7 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
         {
             super.onPreExecute();
             us = ChargerApplication.getUserServices();
-            client = new OkHttpClient();
+            client = GlobalUtils.GetOkHttpClient().build();
         }
 
         @Override
@@ -609,7 +665,6 @@ public class SearchChargerActivity extends AppCompatActivity implements AMapLoca
             }
         }
     }
-
 
     private void DoubleBackExitCallback()
     {

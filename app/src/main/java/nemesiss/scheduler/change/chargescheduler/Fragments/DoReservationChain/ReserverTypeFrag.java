@@ -31,11 +31,11 @@ public class ReserverTypeFrag extends Fragment implements ChainFragment, Fragmen
             switch (btnId){
                 case R.id.ChargeImmediateBtn:
                     activity.SetReservationType(ReservationTypeSelectActivity.ChargeType.ChargeImmediate);
-                    ToNextFragment(new ReserverTimeFrag());
+                    ToNextFragment(new ReserverRemainBattery());
                     break;
                 case R.id.ChargeAllNightBtn:
                     activity.SetReservationType(ReservationTypeSelectActivity.ChargeType.ChargeAllNight);
-                    ToNextFragment(new ReserverTimeFrag());
+                    ToNextFragment(new ReserverRemainBattery());
                     break;
                 default:break;
             }
@@ -63,9 +63,8 @@ public class ReserverTypeFrag extends Fragment implements ChainFragment, Fragmen
         if(IsBusyTime)
         {
             IsBusyTimePeriodHint.setVisibility(View.VISIBLE);
-            ChargeNightBtn.setEnabled(false);
+            //ChargeNightBtn.setEnabled(false);
         }
-
         ChargeImmeBtn.setOnClickListener(SelectTypeListener);
         ChargeNightBtn.setOnClickListener(SelectTypeListener);
         return view;
@@ -81,7 +80,7 @@ public class ReserverTypeFrag extends Fragment implements ChainFragment, Fragmen
             FragmentTransaction ft = fm.beginTransaction();
             ft.setCustomAnimations(R.anim.slide_in,R.anim.slide_out,R.anim.pop_slide_in,R.anim.pop_slide_out);
             ft.replace(R.id.ReservationFragment,fragment);
-            activity.SetHintTitle("选择预约的时间");
+            activity.SetHintTitle("设置剩余的电量");
             activity.setCurrentFragmentChain((ChainFragment)fragment);
             ft.addToBackStack(null);
             ft.commit();

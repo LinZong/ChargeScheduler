@@ -1,19 +1,23 @@
 package nemesiss.scheduler.change.chargescheduler.Services.Users;
 
+import android.content.Intent;
 import android.util.Log;
 import android.util.Pair;
 import com.google.gson.Gson;
+import nemesiss.scheduler.change.chargescheduler.Application.ChargeActivity;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
 import nemesiss.scheduler.change.chargescheduler.Constants.RequestUrl;
+import nemesiss.scheduler.change.chargescheduler.MainActivity;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.CommonResponseModel;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.TokenResponseModel;
 import nemesiss.scheduler.change.chargescheduler.Models.User;
+import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
 import nemesiss.scheduler.change.chargescheduler.Utils.HMacSha256;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -50,7 +54,6 @@ public class UserServices
 
         String encryptedPassword = NeedEncryptPassword ? HMacSha256.Encrypt(Password) : Password;
         // Generate Signature
-
         StringBuilder sb = new StringBuilder(PhoneNumber);
         sb.insert(3, encryptedPassword);
         String insertedString = sb.toString();
@@ -66,8 +69,7 @@ public class UserServices
                     //TODO : Persistence Token and Expire Time to somewhere, and tell UI finished.
                     //设置已登录的用户信息到全局Application中
                     ChargerApplication.setToken(model.getTokenResponse());
-                    if(ChargerApplication.getLoginedUser()==null)
-                        ChargerApplication.setLoginedUser(new User(PhoneNumber,model.getUserID(),encryptedPassword));
+                    ChargerApplication.setLoginedUser(new User(PhoneNumber,model.getUserID(),encryptedPassword));
                     return LoginStatus.LOGIN_SUCCESSFUL;
                 }
                 case 1101:
@@ -134,14 +136,6 @@ public class UserServices
     private static TokenResponseModel SendLoginRequest(String PhoneNumber, String Password, String Signature)
     {
 
-//        RequestBody requestBody = new MultipartBody.Builder()
-//                .setType(MultipartBody.FORM)
-//                .addFormDataPart("phone", PhoneNumber)
-//                .addFormDataPart("password", Password)
-//                .addFormDataPart("signature", Signature)
-//                .build();
-//
-//        Request req = new Request.Builder().url(RequestUrl.getLoginUrl()).post(requestBody).build();
         List<Pair<String,String>> body = new ArrayList<>();
         body.add(new Pair<>("phone",PhoneNumber));
         body.add(new Pair<>("password",Password));

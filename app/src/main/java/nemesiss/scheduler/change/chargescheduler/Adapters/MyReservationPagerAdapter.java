@@ -23,7 +23,7 @@ public class MyReservationPagerAdapter extends FragmentPagerAdapter
         }
     }
 
-    final int PAGE_COUNT = 3;
+    public static final int PAGE_COUNT = 3;
     private Context context;
     private String[] TabsTitle;
     public MyReservationPagerAdapter(FragmentManager fm, Context ctx)

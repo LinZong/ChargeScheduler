@@ -5,8 +5,19 @@ import java.util.Date;
 
 public class ChargeReservation implements Serializable
 {
+    private int RemainBattery;
     private ReservationTypeSelectActivity.ChargeType chargeType;
     private Date ReservationTime;
+
+    public int getRemainBattery()
+    {
+        return RemainBattery;
+    }
+
+    public void setRemainBattery(int remainBattery)
+    {
+        RemainBattery = remainBattery;
+    }
 
     public ReservationTypeSelectActivity.ChargeType getChargeType()
     {

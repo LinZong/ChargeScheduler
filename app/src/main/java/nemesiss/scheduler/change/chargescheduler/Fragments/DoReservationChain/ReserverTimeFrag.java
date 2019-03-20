@@ -12,6 +12,7 @@ import android.widget.Button;
 import com.github.ikidou.fragmentBackHandler.BackHandlerHelper;
 import com.github.ikidou.fragmentBackHandler.FragmentBackHandler;
 import com.jaredrummler.materialspinner.MaterialSpinner;
+import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
 import nemesiss.scheduler.change.chargescheduler.Fragments.ChainFragment;
 import nemesiss.scheduler.change.chargescheduler.R;
 import nemesiss.scheduler.change.chargescheduler.ReservationTypeSelectActivity;
@@ -37,10 +38,11 @@ public class ReserverTimeFrag extends Fragment implements ChainFragment, Fragmen
     {
         view = inflater.inflate(R.layout.reserver_time_fragment, container, false);
 
-        ReservationTimeSpanSpinner = view.findViewById(R.id.ReservationTimeSpanSpinner);
+        ReservationTimeSpanSpinner = view.findViewById(R.id.ReservationRemainBatterySpinner);
         ReservationTimeSpanSpinner.setOnItemSelectedListener((view, position, id, item) -> LastSelectIndex = position);
-        ConfirmTimeSelection = view.findViewById(R.id.ConfirmTimeSelection);
+        ConfirmTimeSelection = view.findViewById(R.id.ConfirmBatterySelection);
         ConfirmTimeSelection.setOnClickListener(this::OnConfirmClick);
+
 
         LastSelectIndex = 0;
 
@@ -57,16 +59,30 @@ public class ReserverTimeFrag extends Fragment implements ChainFragment, Fragmen
         return view;
     }
 
-
     private void GenerateCanReserveTime()
     {
         if (CanSelectTime != null)
         {
             if (!CanSelectTime.isEmpty()) CanSelectTime.clear();
-
-            for (int i = 0; i < 24; i++)
+            try
             {
-                CanSelectTime.add(getOldHour(i));
+                Date beginBusy = ChargerApplication.getBusyTimePeriod().getBeginAsDate();
+                Calendar c = Calendar.getInstance();
+                c.setTime(new Date());
+                Calendar d = Calendar.getInstance();
+                d.setTime(beginBusy);
+                int Now24HFormat = c.get(Calendar.HOUR_OF_DAY);
+                int Begin24HFormat = d.get(Calendar.HOUR_OF_DAY);
+
+                int gap = (24-Now24HFormat) + (Begin24HFormat)-1;
+
+                for (int i = 0; i < gap; i++)
+                {
+                    CanSelectTime.add(getOldHour(i));
+                }
+            } catch (ParseException e)
+            {
+                e.printStackTrace();
             }
         }
     }
@@ -101,7 +117,7 @@ public class ReserverTimeFrag extends Fragment implements ChainFragment, Fragmen
     @Override
     public boolean onBackPressed()
     {
-        activity.SetHintTitle("选择预约的类型");
+        activity.SetHintTitle("设置剩余的电量");
         return BackHandlerHelper.handleBackPress(this);
     }
 

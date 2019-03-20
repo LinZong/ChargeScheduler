@@ -13,6 +13,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import com.amap.api.services.help.Tip;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
+import nemesiss.scheduler.change.chargescheduler.Models.Response.Stations;
 import nemesiss.scheduler.change.chargescheduler.R;
 import nemesiss.scheduler.change.chargescheduler.SearchActivity;
 
@@ -20,17 +21,17 @@ import java.util.List;
 
 public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapter.SearchResultViewHolder>
 {
-    private List<Tip> _searchList = null;
+    private List<Stations> _searchList = null;
     private SearchView searchView = null;
     private SearchActivity searchActivity;
-    public SearchResultAdapter(List<Tip> searchList, final SearchView sv, final SearchActivity activity){
+    public SearchResultAdapter(List<Stations> searchList, final SearchView sv, final SearchActivity activity){
         searchView = sv;
         searchActivity = activity;
         RefreshSearchList(searchList);
         notifyDataSetChanged();
     }
 
-    public void RefreshSearchList(List<Tip> NewSearchList)
+    public void RefreshSearchList(List<Stations> NewSearchList)
     {
         _searchList = NewSearchList;
     }
@@ -46,28 +47,23 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
             public void onClick(View view)
             {
                 int pos = vh.getAdapterPosition();
-                Tip currTip = _searchList.get(pos);
+                Stations currStation = _searchList.get(pos);
                 Context ctx = ChargerApplication.getContext();
-
                 Intent it = new Intent();
-                it.putExtra(ctx.getResources().getString(R.string.SearchLocationBackAddressName),currTip);
+                it.putExtra(ctx.getResources().getString(R.string.SearchLocationBackAddressName), currStation);
                 searchActivity.setResult(Activity.RESULT_OK,it);
                 searchActivity.finish();
             }
         });
         return vh;
     }
-
     @Override
     public void onBindViewHolder(@NonNull SearchResultViewHolder holder, int position)
     {
-//        String str = _searchList.get(position);
-//        holder.NameTextView.setText(str);
-        Tip CurrentTip = _searchList.get(position);
-        holder.NameTextView.setText(CurrentTip.getName());
-        holder.AddressTextView.setText(new StringBuilder(CurrentTip.getDistrict()).append(CurrentTip.getAddress()).toString());
+        Stations CurrentStation = _searchList.get(position);
+        holder.NameTextView.setText(CurrentStation.getName());
+        holder.AddressTextView.setText(new StringBuilder(CurrentStation.getCity()).append(CurrentStation.getAddress()).toString());
     }
-
     @Override
     public int getItemCount()
     {

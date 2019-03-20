@@ -12,5 +12,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+
     </FrameLayout>
+    <TextView
+            android:text="正在为您选择最优充电站，并保证可以在15分钟内到达"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/JudgeStationHint" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="16dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="88dp"
+    />
 </android.support.constraint.ConstraintLayout>

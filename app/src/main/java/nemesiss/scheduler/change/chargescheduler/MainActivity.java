@@ -11,18 +11,18 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import nemesiss.scheduler.change.chargescheduler.Application.ChargeActivity;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
 import nemesiss.scheduler.change.chargescheduler.Constants.RequestUrl;
 import nemesiss.scheduler.change.chargescheduler.Services.Users.UserServices;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends ChargeActivity
 {
     @BindView(R.id.PhoneNumberTextInput)
     TextView phoneText;
@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private int index = 0;
+    private Toast prev = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -50,9 +51,7 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences sp = getSharedPreferences(LOGIN_PERSISTENCE,Context.MODE_PRIVATE);
         String RememberedPhone = sp.getString("PhoneNumber","");
         phoneText.setText(RememberedPhone);
-//        phoneText = findViewById(R.id.PhoneNumberTextInput);
-//        passwordText = findViewById(R.id.Login_PasswordTextInput);
-//        coordinatorLayout = findViewById(R.id.Login_Coordinator);
+
 
         tb.setOnClickListener(this::EnterChangeUrlListener);
 
@@ -60,13 +59,15 @@ public class MainActivity extends AppCompatActivity
 
     private void EnterChangeUrlListener(View view)
     {
+        if(prev!=null) prev.cancel();
         if(index == 6)
         {
             RequestUrl.SwitchRequestUrlHelper(View.inflate(MainActivity.this,R.layout.switch_api_address, null));
         }
         index = (index + 1)%7;
         if(index > 3) {
-            Toast.makeText(MainActivity.this,"还有"+(7-index)+"步进入开发人员工具",Toast.LENGTH_SHORT).show();
+            prev = Toast.makeText(MainActivity.this,"还有"+(7-index)+"步进入开发人员工具",Toast.LENGTH_SHORT);
+            prev.show();
         }
     }
 

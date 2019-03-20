@@ -6,15 +6,17 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.amap.api.services.help.Tip;
 import com.github.ikidou.fragmentBackHandler.BackHandlerHelper;
 import nemesiss.scheduler.change.chargescheduler.Fragments.ChainFragment;
 import nemesiss.scheduler.change.chargescheduler.Fragments.DoReservationChain.ReserverTypeFrag;
 import nemesiss.scheduler.change.chargescheduler.Models.ChargeReservation;
+import nemesiss.scheduler.change.chargescheduler.Models.Response.Stations;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,13 +32,17 @@ public class ReservationTypeSelectActivity extends FragmentActivity implements C
     @BindView(R.id.ReservationTypeTextView) TextView ReservationTypeTextView;
     @BindView(R.id.ReservationTargetChargerName) TextView ReservationTargetChargerName;
     @BindView(R.id.ReservationTargerChargerAddress) TextView ReservationTargerChargerAddress;
-    @BindView(R.id.ReservationTargetChargerStatus) TextView ReservationTargetChargerStatus;
+    @BindView(R.id.InstanceCount) TextView instanceCount;
+    @BindView(R.id.DelayCount) TextView delayCount;
 
     private int CurrentFragmentNum = 0;
     private List<Fragment> ReplaceFragmentList = new ArrayList<>();
-    private Tip WillGoToAddressTip;
+    private Stations WillGoToStations;
     private ChainFragment current;
     private ChargeReservation reservation = new ChargeReservation();
+
+    private boolean ShouldJudge = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,21 +52,20 @@ public class ReservationTypeSelectActivity extends FragmentActivity implements C
         ButterKnife.bind(this);
 
         current = (ChainFragment) getSupportFragmentManager().findFragmentById(R.id.ReservationFragment);
-        WillGoToAddressTip = getIntent().getParcelableExtra("WillGoToAddressTip");
+        WillGoToStations = (Stations) getIntent().getSerializableExtra("WillGoToStations");
+
+
+        ShouldJudge = getIntent().getBooleanExtra("ShouldJudgeStations",false);
+        if(ShouldJudge){
+            ReservationTargetChargerName.setText("将为您自动匹配最合适的充电站。");
+            ReservationTargerChargerAddress.setVisibility(View.GONE);
+        }
 
         //显示下方碎片
         ToNextFragment(new ReserverTypeFrag());
-
-        SetWillGoToAddressTipInfo(WillGoToAddressTip);
+        SetWillGoToAddressTipInfo(WillGoToStations);
     }
 
-    private void InitialViewBinding()
-    {
-        ReservationTypeTextView = findViewById(R.id.ReservationTypeTextView);
-        ReservationTargetChargerName = findViewById(R.id.ReservationTargetChargerName);
-        ReservationTargerChargerAddress = findViewById(R.id.ReservationTargerChargerAddress);
-        ReservationTargetChargerStatus = findViewById(R.id.ReservationTargetChargerStatus);
-    }
 
     public void SetHintTitle(String title)
     {
@@ -70,18 +75,18 @@ public class ReservationTypeSelectActivity extends FragmentActivity implements C
         }
     }
 
-    private void SetWillGoToAddressTipInfo(Tip tip)
+    private void SetWillGoToAddressTipInfo(Stations stat)
     {
-        if(tip!=null)
+        if(stat !=null)
         {
-            String detailedAddress = tip.getDistrict() + tip.getAddress();
-            String chargeStationName = tip.getName();
-
+            String detailedAddress = stat.getCity() + stat.getAddress();
+            String chargeStationName = stat.getName();
             ReservationTargetChargerName.setText(chargeStationName);
             ReservationTargerChargerAddress.setText(detailedAddress);
+            instanceCount.setText(String.valueOf(stat.getAvailableInstance()));
+            delayCount.setText(String.valueOf(stat.getAvailableDelay()));
         }
     }
-
 
     //管理调用链条的逻辑
     public void setCurrentFragmentChain(ChainFragment currentFragmentId)
@@ -94,6 +99,11 @@ public class ReservationTypeSelectActivity extends FragmentActivity implements C
         return current;
     }
 
+    public ReservationTypeSelectActivity.ChargeType GetReservationType()
+    {
+        return reservation.getChargeType();
+    }
+
     public void SetReservationType(ChargeType type)
     {
         reservation.setChargeType(type);
@@ -103,7 +113,10 @@ public class ReservationTypeSelectActivity extends FragmentActivity implements C
     {
         reservation.setReservationTime(time);
     }
-
+    public void SetRemainBattery(int batt)
+    {
+        reservation.setRemainBattery(batt);
+    }
     @Override
     public void ToNextFragment(Fragment next)
     {
@@ -126,9 +139,13 @@ public class ReservationTypeSelectActivity extends FragmentActivity implements C
 
     public void GoToProcessReservationActivity()
     {
+        ArrayList<Stations> stat = new ArrayList<>();
+        stat.add(WillGoToStations);
+
         Intent it = new Intent(ReservationTypeSelectActivity.this,ProcessReservationActivity.class);
         it.putExtra("ChargeReservation",reservation);
-        it.putExtra("WillGoToAddressTip",WillGoToAddressTip);
+        it.putExtra("WillGoToStations", stat);
+        it.putExtra("ShouldJudgeStations",ShouldJudge);
         startActivity(it);
         finish();
     }

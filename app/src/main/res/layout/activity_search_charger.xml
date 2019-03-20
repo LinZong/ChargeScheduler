@@ -12,7 +12,7 @@
             android:layout_height="match_parent"
             android:layout_width="match_parent"
             android:gravity="bottom"
-            app:umanoPanelHeight="100dp"
+            app:umanoPanelHeight="113dp"
             app:umanoShadowHeight="4dp"
             android:id="@+id/RelaxLayout"
             app:umanoFadeColor="@android:color/transparent"

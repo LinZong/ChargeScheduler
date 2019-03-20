@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
+import nemesiss.scheduler.change.chargescheduler.Application.ChargeActivity;
 import nemesiss.scheduler.change.chargescheduler.Services.Users.CommonServices;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalPermissions;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
@@ -19,8 +20,9 @@ import okhttp3.OkHttpClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-public class SplashActivity extends AppCompatActivity
+public class SplashActivity extends ChargeActivity
 {
 
     @Override
@@ -121,7 +123,7 @@ public class SplashActivity extends AppCompatActivity
         protected void onPreExecute()
         {
             super.onPreExecute();
-            client = new OkHttpClient();
+            client = GlobalUtils.GetOkHttpClient().build();
         }
     }
 }

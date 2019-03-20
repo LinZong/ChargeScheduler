@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     <TextView
-            android:text="某某地点"
+            android:text="这里会显示充电站名字..."
             android:layout_width="278dp"
             android:layout_height="wrap_content"
             android:id="@+id/SlideLocationName" android:layout_marginTop="16dp"
@@ -18,7 +18,7 @@
             android:textSize="18sp"
             android:textColor="#000"/>
     <TextView
-            android:text="距离您xxx公里"
+            android:text="正在计算电站与您的距离..."
             android:layout_width="251dp"
             android:layout_height="wrap_content"
             android:id="@+id/SlideDistance" app:layout_constraintStart_toStartOf="@+id/SlideLocationName"
@@ -26,7 +26,7 @@
             app:layout_constraintTop_toBottomOf="@+id/SlideLocationName"
             android:textSize="12sp"/>
     <TextView
-            android:text="某某地址"
+            android:text="这里会显示地址..."
             android:layout_width="219dp"
             android:layout_height="wrap_content"
             android:id="@+id/SlideAddress" app:layout_constraintStart_toStartOf="@+id/SlideDistance"
@@ -57,29 +57,47 @@
             android:clickable="true"
             android:focusable="true"/>
     <TextView
-            android:text="快充0/18 慢充0/30"
+            android:text="上滑查看实时充电桩剩余情况"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/SlideChargeStatus"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="16dp"
-            android:textSize="12sp" app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="60dp"
-            app:layout_constraintStart_toEndOf="@+id/SlideAddress"
-            app:layout_constraintHorizontal_bias="1.0"/>
-    <TextView
-            android:text="实时空闲桩位数据展示功能仍在开发中..."
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView6" app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="136dp"/>
+            android:textSize="12sp" app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="84dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"/>
     <TextView
             android:text="这里也没有什么可以展示的功能啦..."
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/textView7" app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:layout_marginTop="304dp"
-            app:layout_constraintTop_toBottomOf="@+id/textView6"/>
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="472dp"/>
+    <TextView
+            android:text="即时充电桩:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView6" app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
+            android:layout_marginTop="84dp" app:layout_constraintTop_toBottomOf="@+id/SlideAddress"/>
+    <TextView
+            android:text="延时充电桩:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView10" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/textView6" app:layout_constraintStart_toStartOf="@+id/textView6"
+    />
+    <TextView
+            android:text="0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/SlideInstanceCount" app:layout_constraintStart_toEndOf="@+id/textView6"
+            app:layout_constraintBottom_toBottomOf="@+id/textView6"
+            android:layout_marginStart="4dp"/>
+    <TextView
+            android:text="0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/SlideDelayCount" app:layout_constraintStart_toEndOf="@+id/textView10"
+            android:layout_marginStart="4dp" app:layout_constraintBottom_toBottomOf="@+id/textView10"
+    />
 
 </android.support.constraint.ConstraintLayout>
 
