@@ -120,6 +120,7 @@ public class ProcessReservationActivity extends ChargeActivity
                     }
                     reqInfo.setRemainBattery(reservation.getRemainBattery());
                     reqInfo.setWantStation(wantStation1);
+                    reqInfo.setStartTime(GlobalUtils.Date2UnixStamp(reservation.getReservationTime()));
                     break;
             }
 
@@ -188,6 +189,7 @@ public class ProcessReservationActivity extends ChargeActivity
                     case 1305:
                         tips = "没有可供延时预约使用的桩位";
                         LoadProcessingStatusFragment(new ProcessingFailedFragment());
+                        break;
                     case 1306:
                         tips = "当前用户诚信分不足, 不能进行预约操作.";
                         LoadProcessingStatusFragment(new ProcessingFailedFragment());

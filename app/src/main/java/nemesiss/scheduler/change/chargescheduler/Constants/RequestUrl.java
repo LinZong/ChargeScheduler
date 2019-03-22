@@ -22,7 +22,7 @@ public class RequestUrl
     public static final String SetReservationState = "reservation/update";
     public static final String GetMyReservations = "reservation/info/";
 
-    private static int CurrentMode = 1;
+    private static int CurrentMode = 0;
 
 
     public static String getLoginUrl()
