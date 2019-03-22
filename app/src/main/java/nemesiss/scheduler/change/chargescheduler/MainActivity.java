@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.view.View;
@@ -16,11 +15,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.jpush.android.api.JPushInterface;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargeActivity;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
 import nemesiss.scheduler.change.chargescheduler.Constants.RequestUrl;
+import nemesiss.scheduler.change.chargescheduler.Models.User;
 import nemesiss.scheduler.change.chargescheduler.Services.Users.UserServices;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
+
+import static nemesiss.scheduler.change.chargescheduler.Constants.GlobalVariables.LOGIN_PERSISTENCE;
+import static nemesiss.scheduler.change.chargescheduler.Constants.GlobalVariables.SET_ALIAS_SEQ;
 
 public class MainActivity extends ChargeActivity
 {
@@ -33,7 +37,6 @@ public class MainActivity extends ChargeActivity
     @BindView(R.id.ChangeUrlEntry) Toolbar tb;
     private ProgressDialog LoginProgress;
 
-    public static final String LOGIN_PERSISTENCE = "LoginPersistence";
 
 
     private int index = 0;
@@ -50,9 +53,10 @@ public class MainActivity extends ChargeActivity
 
         SharedPreferences sp = getSharedPreferences(LOGIN_PERSISTENCE,Context.MODE_PRIVATE);
         String RememberedPhone = sp.getString("PhoneNumber","");
+
+        UserServices.ClearUserIdAsAliasForJPush();
+        ClearRememberIdentity();
         phoneText.setText(RememberedPhone);
-
-
         tb.setOnClickListener(this::EnterChangeUrlListener);
 
     }
@@ -77,7 +81,7 @@ public class MainActivity extends ChargeActivity
         LoginProgress.show();
         String un = phoneText.getText().toString();
         String pw = passwordText.getText().toString();
-        SaveLoginPhoneNumber(un);
+        SaveLoginIdentity(un,pw);
         new ValidatePasswordTask().execute(un, pw);
     }
 
@@ -88,16 +92,15 @@ public class MainActivity extends ChargeActivity
 
     class ValidatePasswordTask extends AsyncTask<String, Integer, UserServices.LoginStatus>
     {
-        private UserServices us;
 
         @Override
         protected UserServices.LoginStatus doInBackground(String... strings)
         {
-            if(strings.length==2 && GlobalUtils.ConfirmStringsAllNotEmpty(strings))
+            if(strings.length== 2 && GlobalUtils.ConfirmStringsAllNotEmpty(strings))
             {
                 String pn = strings[0];
                 String pw = strings[1];
-                return us.Login(pn, pw, true);
+                return UserServices.Login(pn, pw, true);
             }
             return UserServices.LoginStatus.LOGIN_PASSWORD_WRONG;
         }
@@ -110,6 +113,9 @@ public class MainActivity extends ChargeActivity
             {
                 case LOGIN_SUCCESSFUL:
                 {
+                    //尝试设置别名
+
+
                     startActivity(new Intent(MainActivity.this, SearchChargerActivity.class));
                     finish();
                     break;
@@ -131,17 +137,26 @@ public class MainActivity extends ChargeActivity
         @Override
         protected void onPreExecute()
         {
-            us = ChargerApplication.getUserServices();
+
         }
     }
 
 
 
-    private void SaveLoginPhoneNumber(String PhoneNumber)
+    private void SaveLoginIdentity(String PhoneNumber,String Password)
     {
         SharedPreferences.Editor editor = getSharedPreferences(LOGIN_PERSISTENCE, Context.MODE_PRIVATE).edit();
         editor.putString("PhoneNumber",PhoneNumber);
-        editor.commit();
+        editor.putString("Password",Password);
+        editor.putBoolean("HaveLoginIdentity",true);
+        editor.apply();
     }
 
+    private void ClearRememberIdentity()
+    {
+
+        SharedPreferences.Editor editor = getSharedPreferences(LOGIN_PERSISTENCE, Context.MODE_PRIVATE).edit();
+        editor.putBoolean("HaveLoginIdentity",false);
+        editor.apply();
+    }
 }

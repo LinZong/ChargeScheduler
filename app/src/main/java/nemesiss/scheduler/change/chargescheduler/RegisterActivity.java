@@ -90,6 +90,7 @@ public class RegisterActivity extends ChargeActivity
         PhoneNumberEditText.setError(null);
         PasswordNumberEditText.setError(null);
         checkUserLaw.setError(null);
+        numberPlatePostfixTextView.setError(null);
     }
     public void AttemptRegister(View view)
     {
@@ -116,7 +117,11 @@ public class RegisterActivity extends ChargeActivity
             PasswordNumberEditText.setError("密码至少需要六位");
             return;
         }
-        if(carTypeList.isEmpty())
+        else if(TextUtils.isEmpty(numberPlatePostfixTextView.getText().toString()))
+        {
+            numberPlatePostfixTextView.setError("必须填写车牌号");
+        }
+        else if(carTypeList.isEmpty())
         {
             Snackbar.make(PasswordNumberEditText,"没有选择车型, 不允许注册",Snackbar.LENGTH_SHORT).show();
             return;

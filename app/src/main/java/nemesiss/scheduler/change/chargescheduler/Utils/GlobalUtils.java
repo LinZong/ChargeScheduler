@@ -61,7 +61,7 @@ public class GlobalUtils
         return new SimpleDateFormat("H:mm",Locale.CHINA);
     }
 
-    public static boolean ConfirmStringsAllNotEmpty(String[] strs)
+    public static boolean ConfirmStringsAllNotEmpty(String... strs)
     {
         for (int i = 0; i < strs.length; i++)
         {

@@ -10,7 +10,6 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
-import nemesiss.scheduler.change.chargescheduler.Models.ReservationStatus;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.ReservationInfo;
 import nemesiss.scheduler.change.chargescheduler.R;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
@@ -62,6 +61,16 @@ public class ReservationItemAdapter extends RecyclerView.Adapter<ReservationItem
                 holder.ReservationStatus.setText("被系统取消");
                 break;
         }
+        switch (res.getReservationType())
+        {
+            case 0:
+            case 2:
+                holder.ReservationType.setText("即时预约");
+                break;
+            case 1:
+                holder.ReservationType.setText("延时预约");
+                break;
+        }
         holder.ReservationTime.setText(GlobalUtils.TokenDateFormatter().format(GlobalUtils.UnixStamp2Date(res.getRaiseReservationTime())));
     }
 
@@ -84,6 +93,9 @@ public class ReservationItemAdapter extends RecyclerView.Adapter<ReservationItem
 
         @BindView(R.id.Item_ReservationStatus)
         TextView ReservationStatus;
+
+        @BindView(R.id.Item_ReservationType)
+        TextView ReservationType;
 
         @BindView(R.id.Item_ShowReservationDetail)
         Button ReservationDetail;

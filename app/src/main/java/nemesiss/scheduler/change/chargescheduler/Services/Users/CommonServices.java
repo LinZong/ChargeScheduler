@@ -138,6 +138,7 @@ public class CommonServices
                             ChargerApplication
                             .getBusyTimePeriod()
                             .getEndAsDate()));
+                    resp.close();
                     return busy;
                 } catch (IOException e)
                 {

@@ -9,7 +9,6 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.google.gson.Gson;
@@ -24,7 +23,6 @@ import nemesiss.scheduler.change.chargescheduler.Models.RequestReservationInfo;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.CommonResponseModel;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.Stations;
 import nemesiss.scheduler.change.chargescheduler.Services.Reservation.StationServices;
-import nemesiss.scheduler.change.chargescheduler.Services.Users.CommonServices;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
 import okhttp3.*;
 
@@ -40,6 +38,7 @@ public class ProcessReservationActivity extends ChargeActivity
     private ChargeReservation reservation;
     private ArrayList<Stations> WillGoToStations;
     private StationServices stationServices;
+
 
     private boolean ShouldJudge = false;
     @Override
@@ -189,9 +188,13 @@ public class ProcessReservationActivity extends ChargeActivity
                     case 1305:
                         tips = "没有可供延时预约使用的桩位";
                         LoadProcessingStatusFragment(new ProcessingFailedFragment());
+                    case 1306:
+                        tips = "当前用户诚信分不足, 不能进行预约操作.";
+                        LoadProcessingStatusFragment(new ProcessingFailedFragment());
                         break;
                 }
-                Toast.makeText(ProcessReservationActivity.this,tips,Toast.LENGTH_SHORT).show();
+                JudgeStationHint.setText(tips);
+                JudgeStationHint.setVisibility(View.VISIBLE);
             }
         }
     }

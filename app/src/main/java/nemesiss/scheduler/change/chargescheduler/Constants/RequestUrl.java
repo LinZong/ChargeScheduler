@@ -11,7 +11,7 @@ import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
 public class RequestUrl
 {
 
-    public static final String[] BaseUrl = new String[]{"http://192.168.43.223:8970/","http://111.230.238.192/learn/",""};
+    public static final String[] BaseUrl = new String[]{"http://192.168.88.126:8970/","http://111.230.238.192/learn/",""};
     public static final String Login = "user/login";
     public static final String Register = "user/register";
     public static final String CarType = "CheckServer/GetCarList";
@@ -103,7 +103,7 @@ public class RequestUrl
             }
             else textView.setVisibility(View.GONE);
         });
-        AlertDialog.Builder bd = GlobalUtils.ShowAlertDialog(dialogInnerView.getContext(),true,"修改请求API地址 (开发人员专用)", null);
+        AlertDialog.Builder bd = GlobalUtils.ShowAlertDialog(dialogInnerView.getContext(),false,"修改请求API地址 (开发人员专用)", null);
         bd.setView(dialogInnerView);
         bd.setPositiveButton("OK", (d, i) ->
         {

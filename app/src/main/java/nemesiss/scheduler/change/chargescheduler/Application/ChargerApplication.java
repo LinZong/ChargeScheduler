@@ -1,12 +1,15 @@
 package nemesiss.scheduler.change.chargescheduler.Application;
 
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.os.Build;
+import cn.jpush.android.api.JPushInterface;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.BusyTimePeriod;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.TokenResponseInfo;
 import nemesiss.scheduler.change.chargescheduler.Models.User;
+import nemesiss.scheduler.change.chargescheduler.R;
 import nemesiss.scheduler.change.chargescheduler.Services.Reservation.ReservationServices;
 import nemesiss.scheduler.change.chargescheduler.Services.Reservation.StationServices;
 import nemesiss.scheduler.change.chargescheduler.Services.Users.CarServices;
@@ -24,7 +27,6 @@ public class ChargerApplication extends Application
     private static User LoginedUser;
     private static TokenResponseInfo token;
     private static BusyTimePeriod busyTimePeriod;
-
     public static boolean[] FeaturesSwitcher = new boolean[10];
 
     @Override
@@ -35,12 +37,18 @@ public class ChargerApplication extends Application
             FeaturesSwitcher[i] = true;
         }
         super.onCreate();
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(this);
+        //createNotificationChannel();
         ctx = getApplicationContext();
         userServices = new UserServices();
         carServices = new CarServices();
         stationServices = new StationServices();
         reservationServices = new ReservationServices();
+
     }
+
+
 
     public static Context getContext()
     {
@@ -97,4 +105,6 @@ public class ChargerApplication extends Application
     {
         ChargerApplication.busyTimePeriod = busyTimePeriod;
     }
+
+
 }

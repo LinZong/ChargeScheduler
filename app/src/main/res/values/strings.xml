@@ -7,4 +7,6 @@
     <string name="MyLocation_Intent">MyLocation_Intent</string>
     <string name="MyLocationCityName">MyLocationCityName</string>
     <string name="SearchLocationBackAddressName">SearchLocationBackAddressName</string>
+    <string name="channel_description">ChargeScheduler推送预约成功信息的Channel</string>
+    <string name="channel_name">ChargeSchedulerPushChannel</string>
 </resources>

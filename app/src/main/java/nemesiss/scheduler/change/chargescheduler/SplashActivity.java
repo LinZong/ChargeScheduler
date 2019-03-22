@@ -1,26 +1,28 @@
 package nemesiss.scheduler.change.chargescheduler;
 
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Window;
 import android.view.WindowManager;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargeActivity;
 import nemesiss.scheduler.change.chargescheduler.Services.Users.CommonServices;
+import nemesiss.scheduler.change.chargescheduler.Services.Users.UserServices;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalPermissions;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
 import okhttp3.OkHttpClient;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+
+import static nemesiss.scheduler.change.chargescheduler.Constants.GlobalVariables.LOGIN_PERSISTENCE;
 
 public class SplashActivity extends ChargeActivity
 {
@@ -36,11 +38,56 @@ public class SplashActivity extends ChargeActivity
         new PrepareApplicationTask().execute();
     }
 
-    private void JumpToMainActivity(){
+    private void JumpToLoginActivity(){
         Intent it = new Intent(SplashActivity.this,MainActivity.class);
         startActivity(it);
         overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
         finish();
+    }
+
+    private void JumpToSearchChargerActivity()
+    {
+        Intent it = new Intent(SplashActivity.this,SearchChargerActivity.class);
+        startActivity(it);
+        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+        finish();
+    }
+
+
+    private void TryLoginPresetAccount()
+    {
+        //检测是否保存了账号，如果保存了就尝试登录，登陆成功直接进入主界面，否则没有保存账号或者账号已失效的，跳回登陆界面
+        SharedPreferences sp = getSharedPreferences(LOGIN_PERSISTENCE, Context.MODE_PRIVATE);
+
+        boolean HaveLoginIdentity = sp.getBoolean("HaveLoginIdentity",true);
+        if(HaveLoginIdentity)
+        {
+            String pn = sp.getString("PhoneNumber","");
+            String pw = sp.getString("Password","");
+            if(GlobalUtils.ConfirmStringsAllNotEmpty(pn,pw))
+            {
+                Runnable LoginRunnable = () -> {
+                    UserServices.LoginStatus status = UserServices.Login(pn,pw, true);
+                    if(status.equals(UserServices.LoginStatus.LOGIN_SUCCESSFUL))
+                    {
+                        runOnUiThread(this::JumpToSearchChargerActivity);
+                    }
+                    else
+                    {
+                        runOnUiThread(this::JumpToLoginActivity);
+                    }
+                };
+                new Thread(LoginRunnable).start();
+            }
+            else
+            {
+                JumpToLoginActivity();
+            }
+        }
+        else
+        {
+            JumpToLoginActivity();
+        }
     }
 
     @Override
@@ -60,7 +107,7 @@ public class SplashActivity extends ChargeActivity
                     }
 
                     if(StillNeedPermission.size() <= 0) {
-                        JumpToMainActivity();
+                        JumpToLoginActivity();
                         return;
                     }
                     else {
@@ -116,7 +163,7 @@ public class SplashActivity extends ChargeActivity
         @Override
         protected void onPostExecute(Boolean result)
         {
-            if(result) JumpToMainActivity();
+            if(result) TryLoginPresetAccount();
         }
 
         @Override

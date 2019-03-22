@@ -1,17 +1,17 @@
 package nemesiss.scheduler.change.chargescheduler.Services.Users;
 
-import android.content.Intent;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
+import cn.jpush.android.api.JPushInterface;
 import com.google.gson.Gson;
-import nemesiss.scheduler.change.chargescheduler.Application.ChargeActivity;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
 import nemesiss.scheduler.change.chargescheduler.Constants.RequestUrl;
-import nemesiss.scheduler.change.chargescheduler.MainActivity;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.CommonResponseModel;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.TokenResponseModel;
 import nemesiss.scheduler.change.chargescheduler.Models.User;
-import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
 import nemesiss.scheduler.change.chargescheduler.Utils.HMacSha256;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static nemesiss.scheduler.change.chargescheduler.Constants.GlobalVariables.LOGIN_PERSISTENCE;
+import static nemesiss.scheduler.change.chargescheduler.Constants.GlobalVariables.SET_ALIAS_SEQ;
 
 public class UserServices
 {
@@ -70,6 +73,7 @@ public class UserServices
                     //设置已登录的用户信息到全局Application中
                     ChargerApplication.setToken(model.getTokenResponse());
                     ChargerApplication.setLoginedUser(new User(PhoneNumber,model.getUserID(),encryptedPassword));
+                    SetUserIdAsAliasForJPush(model.getUserID());
                     return LoginStatus.LOGIN_SUCCESSFUL;
                 }
                 case 1101:
@@ -123,7 +127,9 @@ public class UserServices
             if(resp!=null && resp.isSuccessful())
             {
                 Gson gson = new Gson();
-                return gson.fromJson(resp.body().string(),CommonResponseModel.class);
+                CommonResponseModel model = gson.fromJson(resp.body().string(),CommonResponseModel.class);
+                resp.close();
+                return model;
             }
         } catch (IOException e)
         {
@@ -148,7 +154,9 @@ public class UserServices
             {
                 String respJson = resp.body().string();
                 Gson gson = new Gson();
-                return gson.fromJson(respJson, TokenResponseModel.class);
+                TokenResponseModel model = gson.fromJson(respJson, TokenResponseModel.class);
+                resp.close();
+                return model;
             }
         } catch (IOException e)
         {
@@ -158,4 +166,31 @@ public class UserServices
         return null;
     }
 
+    public static void SetUserIdAsAliasForJPush(long UserId)
+    {
+        Context ctx = ChargerApplication.getContext();
+        SharedPreferences sp = ctx.getSharedPreferences(LOGIN_PERSISTENCE, Context.MODE_PRIVATE);
+        String HaveSetAlias = sp.getString("UserIdAsAlias","");
+        if(TextUtils.isEmpty(HaveSetAlias))
+        {
+            JPushInterface.setAlias(ctx,1, String.valueOf(UserId));
+        }
+        else
+        {
+            Log.d("UserServices","检测到存在Alias, 为"+HaveSetAlias);
+        }
+    }
+
+    public static void ClearUserIdAsAliasForJPush()
+    {
+        Context ctx = ChargerApplication.getContext();
+        SharedPreferences sp = ctx.getSharedPreferences(LOGIN_PERSISTENCE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sp.edit();
+        String HaveSetAlias = sp.getString("UserIdAsAlias","");
+        if(!TextUtils.isEmpty(HaveSetAlias))
+        {
+            JPushInterface.deleteAlias(ChargerApplication.getContext(),SET_ALIAS_SEQ);
+            ed.apply();
+        }
+    }
 }
