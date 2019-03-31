@@ -17,8 +17,9 @@
         <item name="android:background">@android:color/transparent</item>
         <item name="android:textColor">@drawable/hypelink_style</item>
     </style>
+
     <style name="ButtonNormalStyle">
-        <item name="android:background">@drawable/button_style</item>
+        <item name="android:background">@drawable/red_long_button_style</item>
     </style>
     <style name="ReservationTypeSelectButtonStyle">
         <item name="android:paddingLeft">25dp</item>
@@ -27,5 +28,6 @@
         <item name="android:background">@drawable/reserve_type_select_btn</item>
     </style>
     <style name="SearchChargeMapStyle" parent="AppTheme">
+        <item name="colorPrimaryDark">#000</item>
     </style>
 </resources>

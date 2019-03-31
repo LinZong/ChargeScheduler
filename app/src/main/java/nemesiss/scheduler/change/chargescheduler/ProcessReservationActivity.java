@@ -12,6 +12,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.google.gson.Gson;
+import com.jaeger.library.StatusBarUtil;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargeActivity;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
 import nemesiss.scheduler.change.chargescheduler.Constants.RequestUrl;
@@ -47,6 +48,8 @@ public class ProcessReservationActivity extends ChargeActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_process_reservation);
         ButterKnife.bind(this);
+        StatusBarUtil.setTransparent(this);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 
         stationServices = ChargerApplication.getStationServices();
 

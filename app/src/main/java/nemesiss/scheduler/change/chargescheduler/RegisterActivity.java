@@ -64,12 +64,7 @@ public class RegisterActivity extends ChargeActivity
         numberPlateSpinner.setItems("粤A","粤B","粤G");
 
         //设置返回键显示逻辑
-        setSupportActionBar(toolbar);
-        ActionBar ab = getSupportActionBar();
-        if(ab!=null)
-        {
-            ab.setDisplayHomeAsUpEnabled(true);
-        }
+        GlobalUtils.ToolbarShowReturnButton(RegisterActivity.this,toolbar);
 
     }
 

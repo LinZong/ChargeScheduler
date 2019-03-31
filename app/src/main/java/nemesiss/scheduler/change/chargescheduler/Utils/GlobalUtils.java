@@ -1,8 +1,12 @@
 package nemesiss.scheduler.change.chargescheduler.Utils;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.widget.Toast;
@@ -111,5 +115,14 @@ public class GlobalUtils
     public static long Date2UnixStamp(Date date)
     {
         return date.getTime()/1000;
+    }
+
+    public static void ToolbarShowReturnButton(AppCompatActivity activity, Toolbar tb){
+        activity.setSupportActionBar(tb);
+        ActionBar ab = activity.getSupportActionBar();
+        if(ab!=null)
+        {
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
     }
 }

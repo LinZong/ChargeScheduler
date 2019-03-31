@@ -29,12 +29,16 @@ public class StationServices
     {
         AllStationsList = new SparseArray<>();
         client = GlobalUtils.GetOkHttpClient().build();
-        new GetAllStationTask().execute();
     }
 
     public SparseArray<Stations> getAllStationsList()
     {
         return AllStationsList;
+    }
+
+    public void RefreshAllStationInfo()
+    {
+        new GetAllStationTask().execute();
     }
 
     public Stations SetStationInfo(Stations info) throws IllegalArgumentException

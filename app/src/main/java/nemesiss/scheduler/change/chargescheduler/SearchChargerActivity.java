@@ -1,6 +1,7 @@
 package nemesiss.scheduler.change.chargescheduler;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,7 +12,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.util.Pair;
@@ -42,6 +42,7 @@ import com.amap.api.services.route.DistanceItem;
 import com.amap.api.services.route.DistanceResult;
 import com.amap.api.services.route.DistanceSearch;
 import com.google.gson.Gson;
+import com.jaeger.library.StatusBarUtil;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargeActivity;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
@@ -110,7 +111,6 @@ public class SearchChargerActivity extends ChargeActivity implements AMapLocatio
 
     //状态量
     private boolean IsApplicationBoot = true;
-    private boolean IsFirstTimeShowSlideLayout = true;
     private Location MyLocation = null;
     private City MyLocationCity = new City();
     private Stations CurrentSearchStation = null;
@@ -155,8 +155,11 @@ public class SearchChargerActivity extends ChargeActivity implements AMapLocatio
         ButterKnife.bind(this);
 
         stationServices = ChargerApplication.getStationServices();
-
         LeftSlideNavMenu.setNavigationItemSelectedListener(this::OnNavigationItemSelected);
+
+        ConstraintLayout layout = (ConstraintLayout)LeftSlideNavMenu.getHeaderView(0);
+        layout.setOnClickListener(this::ShowUserInfo);
+        
         SlidingUpPanel.setAnchorPoint(0.40f);
         SlidingUpInitialStatus = SlidingUpPanel.onSaveInstanceState();
         SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
@@ -166,7 +169,6 @@ public class SearchChargerActivity extends ChargeActivity implements AMapLocatio
                 it.putExtra("WillGoToStations",CurrentSearchStation);
                 startActivity(it);
         });
-
 
         SlidingUpPanel.setFadeOnClickListener(v -> SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN));
 
@@ -205,7 +207,14 @@ public class SearchChargerActivity extends ChargeActivity implements AMapLocatio
             SetLocationStyle();
             ConfigureLocationClient();
         }
+        StatusBarUtil.setTransparent(this);
         new GetDetailedUserTask().execute();
+    }
+
+    private void ShowUserInfo(View view)
+    {
+        Intent it = new Intent(SearchChargerActivity.this,UserInfoActivity.class);
+        startActivity(it);
     }
 
     private boolean OnNavigationItemSelected(MenuItem menuItem)
@@ -437,13 +446,12 @@ public class SearchChargerActivity extends ChargeActivity implements AMapLocatio
                 }, th ->{
                     runOnUiThread(()->{
                         ChargerApplication.FeaturesSwitcher[0] = false;
-                        Toast.makeText(SearchChargerActivity.this,"当前位置得到了更新,但无法计算距离各个充电站的位置，预约功能将受到影响。",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SearchChargerActivity.this,"当前位置得到了更新,但无法计算距离各个充电站的位置，预约功能将受到影响。"+th.getMessage(),Toast.LENGTH_SHORT).show();
                     });
                 });
 
 
     }
-
 
 
 
@@ -608,6 +616,8 @@ public class SearchChargerActivity extends ChargeActivity implements AMapLocatio
                         loginedUser.setCarTypeId(user.getCarTypeId());
                         loginedUser.setCredits(user.getCredits());
                         loginedUser.setNickname(user.getNickname());
+                        loginedUser.setOnTimeRatio(user.getOnTimeRatio());
+                        loginedUser.setNumberPlate(user.getNumberPlate());
                         return true;
                     }
                 }

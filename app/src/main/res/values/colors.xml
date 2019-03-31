@@ -7,4 +7,5 @@
     <color name="buttonRed">#fbe74040</color>
     <color name="hyperLinkNormal">#0d8ac9</color>
     <color name="hyperLinkPressed">#02557e</color>
+    <color name="buttonGray">#e9e9e9</color>
 </resources>

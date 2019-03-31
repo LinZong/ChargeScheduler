@@ -5,6 +5,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.TextView;
 import com.jaredrummler.materialspinner.MaterialSpinner;
+import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
 import nemesiss.scheduler.change.chargescheduler.R;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
 
@@ -22,7 +23,7 @@ public class RequestUrl
     public static final String SetReservationState = "reservation/update";
     public static final String GetMyReservations = "reservation/info/";
 
-    private static int CurrentMode = 0;
+    private static int CurrentMode = 1;
 
 
     public static String getLoginUrl()
@@ -109,6 +110,8 @@ public class RequestUrl
         {
             BaseUrl[2] = textView.getText().toString();
             SetCurrentUrlMode(spinner.getSelectedIndex());
+
+            ChargerApplication.LoadWhenApplicationStart();//重新请求程序运行所必要的数据
         });
         bd.setNegativeButton("Cancel",(d,i)->{});
         bd.show();

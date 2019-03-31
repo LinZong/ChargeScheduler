@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="nemesiss.scheduler.change.chargescheduler">
+
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -11,11 +12,11 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
-    <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
+    <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT"/>
 
     <permission
             android:name="nemesiss.scheduler.change.chargescheduler.permission.JPUSH_MESSAGE"
-            android:protectionLevel="signature" />
+            android:protectionLevel="signature"/>
 
     <application
             android:name=".Application.ChargerApplication"
@@ -41,13 +42,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity">
-
             <intent-filter>
                 <action android:name="nemesiss.scheduler.change.chargescheduler.loginActivityAction"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name=".SearchChargerActivity">
+        <activity
+                android:name=".SearchChargerActivity"
+        android:theme="@style/SearchChargeMapStyle">
         </activity>
         <activity android:name=".SearchActivity">
         </activity>
@@ -64,24 +66,27 @@
 
         <receiver android:name=".Notifications.JPushActionResultReceiver">
             <intent-filter>
-                <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE" />
-                <category android:name="nemesiss.scheduler.change.chargescheduler"></category>
+                <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE"/>
+
+                <category android:name="nemesiss.scheduler.change.chargescheduler"/>
             </intent-filter>
         </receiver>
-        <!--<receiver-->
-                <!--android:name=".Notifications.ScheduleMessageReceiver"-->
-                <!--android:exported="false"-->
-                <!--android:enabled="true">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="cn.jpush.android.intent.REGISTRATION" /> &lt;!&ndash;Required  用户注册SDK的intent&ndash;&gt;-->
-                <!--<action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" /> &lt;!&ndash;Required  用户接收SDK消息的intent&ndash;&gt;-->
-                <!--<action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" /> &lt;!&ndash;Required  用户接收SDK通知栏信息的intent&ndash;&gt;-->
-                <!--<action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" /> &lt;!&ndash;Required  用户打开自定义通知栏的intent&ndash;&gt;-->
-                <!--<action android:name="cn.jpush.android.intent.CONNECTION" />&lt;!&ndash; 接收网络变化 连接/断开 since 1.6.3 &ndash;&gt;-->
-                <!--<category android:name="nemesiss.scheduler.change.chargescheduler" />-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
+        <!-- <receiver -->
+        <!-- android:name=".Notifications.ScheduleMessageReceiver" -->
+        <!-- android:exported="false" -->
+        <!-- android:enabled="true"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="cn.jpush.android.intent.REGISTRATION" /> &lt;!&ndash;Required  用户注册SDK的intent&ndash;&gt; -->
+        <!-- <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" /> &lt;!&ndash;Required  用户接收SDK消息的intent&ndash;&gt; -->
+        <!-- <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" /> &lt;!&ndash;Required  用户接收SDK通知栏信息的intent&ndash;&gt; -->
+        <!-- <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" /> &lt;!&ndash;Required  用户打开自定义通知栏的intent&ndash;&gt; -->
+        <!-- <action android:name="cn.jpush.android.intent.CONNECTION" />&lt;!&ndash; 接收网络变化 连接/断开 since 1.6.3 &ndash;&gt; -->
+        <!-- <category android:name="nemesiss.scheduler.change.chargescheduler" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
 
+        <activity android:name=".UserInfoActivity">
+        </activity>
     </application>
 
 </manifest>

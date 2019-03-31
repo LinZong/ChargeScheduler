@@ -13,7 +13,7 @@ public class User
     private String Password;
     private String NumberPlate;
     private int TodayFailedTime;
-
+    private double OnTimeRatio;
     public User()
     {
     }
@@ -23,6 +23,11 @@ public class User
         setPhone(phone);
         setId(id);
         setPassword(password);
+    }
+
+    public double getOnTimeRatio()
+    {
+        return OnTimeRatio;
     }
 
     public String getPassword()
@@ -103,5 +108,10 @@ public class User
     public void setTodayFailedTime(int todayFailedTime)
     {
         TodayFailedTime = todayFailedTime;
+    }
+
+    public void setOnTimeRatio(double onTimeRatio)
+    {
+        OnTimeRatio = onTimeRatio;
     }
 }

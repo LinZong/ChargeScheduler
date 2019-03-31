@@ -5,19 +5,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
-import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.Window;
 import android.view.WindowManager;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargeActivity;
-import nemesiss.scheduler.change.chargescheduler.Services.Users.CommonServices;
 import nemesiss.scheduler.change.chargescheduler.Services.Users.UserServices;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalPermissions;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
-import okhttp3.OkHttpClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,9 +53,9 @@ public class SplashActivity extends ChargeActivity
 
     private void TryLoginPresetAccount()
     {
+        //JumpToLoginActivity();
         //检测是否保存了账号，如果保存了就尝试登录，登陆成功直接进入主界面，否则没有保存账号或者账号已失效的，跳回登陆界面
         SharedPreferences sp = getSharedPreferences(LOGIN_PERSISTENCE, Context.MODE_PRIVATE);
-
         boolean HaveLoginIdentity = sp.getBoolean("HaveLoginIdentity",true);
         if(HaveLoginIdentity)
         {
@@ -151,12 +148,10 @@ public class SplashActivity extends ChargeActivity
 
     class PrepareApplicationTask extends AsyncTask<Void,Void,Boolean>
     {
-        private OkHttpClient client;
 
         @Override
         protected Boolean doInBackground(Void ...voids)
         {
-            CommonServices.GetBusyTimePeriod(client);
             return GlobalPermissions.RequestAllPermissions(SplashActivity.this,SplashActivity.this);
         }
 
@@ -170,7 +165,6 @@ public class SplashActivity extends ChargeActivity
         protected void onPreExecute()
         {
             super.onPreExecute();
-            client = GlobalUtils.GetOkHttpClient().build();
         }
     }
 }

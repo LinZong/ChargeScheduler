@@ -33,7 +33,6 @@ public class GlobalPermissions
 //                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
 //                    Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS,
 
-
                     Manifest.permission.INTERNET,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION,

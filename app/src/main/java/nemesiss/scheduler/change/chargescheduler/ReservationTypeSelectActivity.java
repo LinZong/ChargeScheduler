@@ -11,6 +11,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.github.ikidou.fragmentBackHandler.BackHandlerHelper;
+import com.jaeger.library.StatusBarUtil;
 import nemesiss.scheduler.change.chargescheduler.Fragments.ChainFragment;
 import nemesiss.scheduler.change.chargescheduler.Fragments.DoReservationChain.ReserverTypeFrag;
 import nemesiss.scheduler.change.chargescheduler.Models.ChargeReservation;
@@ -50,6 +51,8 @@ public class ReservationTypeSelectActivity extends FragmentActivity implements C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reservation_type_select);
         ButterKnife.bind(this);
+        StatusBarUtil.setTransparent(this);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 
         current = (ChainFragment) getSupportFragmentManager().findFragmentById(R.id.ReservationFragment);
         WillGoToStations = (Stations) getIntent().getSerializableExtra("WillGoToStations");

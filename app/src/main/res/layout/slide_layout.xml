@@ -7,7 +7,8 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/SlideLocationDeatilConstraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
     <TextView
             android:text="这里会显示充电站名字..."
             android:layout_width="278dp"

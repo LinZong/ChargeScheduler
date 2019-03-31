@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="SearchChargeMapStyle" parent="AppTheme">
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:statusBarColor">#000</item>
+        <item name="colorPrimaryDark">#000</item>
     </style>
 </resources>

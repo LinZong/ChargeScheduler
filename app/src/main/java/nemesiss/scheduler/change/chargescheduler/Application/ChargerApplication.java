@@ -1,19 +1,17 @@
 package nemesiss.scheduler.change.chargescheduler.Application;
 
 import android.app.Application;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Context;
-import android.os.Build;
 import cn.jpush.android.api.JPushInterface;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.BusyTimePeriod;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.TokenResponseInfo;
 import nemesiss.scheduler.change.chargescheduler.Models.User;
-import nemesiss.scheduler.change.chargescheduler.R;
 import nemesiss.scheduler.change.chargescheduler.Services.Reservation.ReservationServices;
 import nemesiss.scheduler.change.chargescheduler.Services.Reservation.StationServices;
 import nemesiss.scheduler.change.chargescheduler.Services.Users.CarServices;
+import nemesiss.scheduler.change.chargescheduler.Services.Users.CommonServices;
 import nemesiss.scheduler.change.chargescheduler.Services.Users.UserServices;
+import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
 
 public class ChargerApplication extends Application
 {
@@ -37,15 +35,18 @@ public class ChargerApplication extends Application
             FeaturesSwitcher[i] = true;
         }
         super.onCreate();
+
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
-        //createNotificationChannel();
+
+
         ctx = getApplicationContext();
         userServices = new UserServices();
         carServices = new CarServices();
         stationServices = new StationServices();
         reservationServices = new ReservationServices();
 
+        LoadWhenApplicationStart();
     }
 
 
@@ -106,5 +107,11 @@ public class ChargerApplication extends Application
         ChargerApplication.busyTimePeriod = busyTimePeriod;
     }
 
-
+    public static void LoadWhenApplicationStart()
+    {
+        new Thread(()->{
+            CommonServices.GetBusyTimePeriod(GlobalUtils.GetOkHttpClient().build());
+            stationServices.RefreshAllStationInfo();
+        }).start();
+    }
 }

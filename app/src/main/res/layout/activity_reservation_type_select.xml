@@ -5,7 +5,8 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ReservationTypeSelectActivity">
+        tools:context=".ReservationTypeSelectActivity"
+android:fitsSystemWindows="true">
 
     <include layout="@layout/select_location_info"></include>
     <FrameLayout
