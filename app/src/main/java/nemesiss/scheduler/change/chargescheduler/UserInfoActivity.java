@@ -1,20 +1,23 @@
 package nemesiss.scheduler.change.chargescheduler;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import nemesiss.scheduler.change.chargescheduler.Application.ChargeActivity;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
 import nemesiss.scheduler.change.chargescheduler.Models.User;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
 
-public class UserInfoActivity extends AppCompatActivity
+public class UserInfoActivity extends ChargeActivity
 {
 
     @BindView(R.id.UserInfoID)
@@ -71,5 +74,11 @@ public class UserInfoActivity extends AppCompatActivity
             default:break;
         }
         return true;
+    }
+
+    public void LogoutUserAccount(View view)
+    {   ChargeActivity.FinishAllActivities();
+        Intent it = new Intent("nemesiss.scheduler.change.chargescheduler.loginActivityAction");
+        startActivity(it);
     }
 }

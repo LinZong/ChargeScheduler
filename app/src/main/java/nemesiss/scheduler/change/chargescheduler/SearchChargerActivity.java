@@ -16,6 +16,7 @@ import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.util.Pair;
 import android.util.SparseArray;
+import android.view.DragEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
@@ -154,12 +155,30 @@ public class SearchChargerActivity extends ChargeActivity implements AMapLocatio
         setContentView(R.layout.activity_search_charger);
         ButterKnife.bind(this);
 
+
+
         stationServices = ChargerApplication.getStationServices();
         LeftSlideNavMenu.setNavigationItemSelectedListener(this::OnNavigationItemSelected);
 
         ConstraintLayout layout = (ConstraintLayout)LeftSlideNavMenu.getHeaderView(0);
         layout.setOnClickListener(this::ShowUserInfo);
-        
+
+        SlidingUpPanel.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener()
+        {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset)
+            {
+
+                panel.findViewById(R.id.SlideChargeStatus).setAlpha(1-(float)Math.min(1, slideOffset /0.4));
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState)
+            {
+
+            }
+        });
+
         SlidingUpPanel.setAnchorPoint(0.40f);
         SlidingUpInitialStatus = SlidingUpPanel.onSaveInstanceState();
         SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
@@ -229,9 +248,6 @@ public class SearchChargerActivity extends ChargeActivity implements AMapLocatio
             }
             case R.id.nav_settings:
             {
-                ChargeActivity.FinishAllActivities();
-                Intent it = new Intent("nemesiss.scheduler.change.chargescheduler.loginActivityAction");
-                startActivity(it);
                 break;
             }
             default:
@@ -260,6 +276,7 @@ public class SearchChargerActivity extends ChargeActivity implements AMapLocatio
     {
         aMap = mMapView.getMap();
         mUiSettings = aMap.getUiSettings();
+
     }
 
     private void ConfigureLocationClient()

@@ -55,7 +55,6 @@ public class ProcessReservationActivity extends ChargeActivity
 
         //get ChargeReservation Info and try to connect server with an async task.
         LoadProcessingStatusFragment(new ProcessingFragment());
-
         reservation = (ChargeReservation) getIntent().getSerializableExtra("ChargeReservation");
         WillGoToStations = (ArrayList<Stations>)getIntent().getSerializableExtra("WillGoToStations");
 

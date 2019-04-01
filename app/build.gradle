@@ -25,7 +25,6 @@ android {
                 JPUSH_APPKEY : "c75bbffc8bc62214c21cd330", //JPush 上注册的包名对应的 Appkey.
                 JPUSH_CHANNEL: "developer-default"
         ]
-
     }
 
     buildTypes {

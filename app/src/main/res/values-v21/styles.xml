@@ -2,7 +2,8 @@
 <resources>
     <style name="SearchChargeMapStyle" parent="AppTheme">
         <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:statusBarColor">#000</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentNavigation">true</item>
         <item name="colorPrimaryDark">#000</item>
     </style>
 </resources>

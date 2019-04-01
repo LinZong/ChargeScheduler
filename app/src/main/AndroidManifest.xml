@@ -32,16 +32,18 @@
         </meta-data>
 
         <service android:name="com.amap.api.location.APSService"/>
-
         <activity
                 android:name=".SplashActivity"
-                android:theme="@style/SplashNoWhiteScreenStyle">
+                android:theme="@style/SplashNoWhiteScreenStyle"
+                android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity">
+
+        <activity android:name=".MainActivity"
+                  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="nemesiss.scheduler.change.chargescheduler.loginActivityAction"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -49,25 +51,31 @@
         </activity>
         <activity
                 android:name=".SearchChargerActivity"
-        android:theme="@style/SearchChargeMapStyle">
+                android:theme="@style/SearchChargeMapStyle"
+                android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".SearchActivity">
+        <activity android:name=".SearchActivity"
+                  android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".ReservationTypeSelectActivity">
+        <activity android:name=".ReservationTypeSelectActivity"
+                  android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".ProcessReservationActivity">
+        <activity android:name=".ProcessReservationActivity"
+                  android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".RegisterActivity">
+        <activity android:name=".RegisterActivity"
+                  android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".MyReservationActivity">
+        <activity android:name=".MyReservationActivity"
+                  android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".TestFunctionActivity">
+        <activity android:name=".TestFunctionActivity"
+                  android:screenOrientation="portrait">
         </activity>
 
         <receiver android:name=".Notifications.JPushActionResultReceiver">
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE"/>
-
                 <category android:name="nemesiss.scheduler.change.chargescheduler"/>
             </intent-filter>
         </receiver>
@@ -85,7 +93,9 @@
         <!-- </intent-filter> -->
         <!-- </receiver> -->
 
-        <activity android:name=".UserInfoActivity">
+        <activity android:name=".UserInfoActivity"
+                  android:windowSoftInputMode="stateHidden"
+                  android:screenOrientation="portrait">
         </activity>
     </application>
 
