@@ -1,5 +1,6 @@
 package nemesiss.scheduler.change.chargescheduler.Adapters;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import nemesiss.scheduler.change.chargescheduler.Application.ChargeActivity;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
 import nemesiss.scheduler.change.chargescheduler.Models.Response.ReservationInfo;
+import nemesiss.scheduler.change.chargescheduler.MyReservationActivity;
 import nemesiss.scheduler.change.chargescheduler.R;
 import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
 
@@ -35,7 +38,7 @@ public class ReservationItemAdapter extends RecyclerView.Adapter<ReservationItem
     public void onBindViewHolder(ItemViewHolder holder, int position)
     {
         ReservationInfo res = reservationInfoList.get(position);
-
+        holder.currentReservationInfo = res;
         Integer statId = res.getUsedStationId();
         if(statId!=null)
         {
@@ -82,6 +85,7 @@ public class ReservationItemAdapter extends RecyclerView.Adapter<ReservationItem
 
     class ItemViewHolder extends RecyclerView.ViewHolder
     {
+        public ReservationInfo currentReservationInfo;
         @BindView(R.id.Item_StationImage)
         ImageView StationImage;
 
@@ -104,6 +108,15 @@ public class ReservationItemAdapter extends RecyclerView.Adapter<ReservationItem
         {
             super(itemView);
             ButterKnife.bind(this,itemView);
+            ReservationDetail.setOnClickListener(this::GotoReservationDetailActivity);
+        }
+
+        private void GotoReservationDetailActivity(View view)
+        {
+            Intent i =new Intent("nemesiss.scheduler.change.chargescheduler.detailActivityAction");
+            i.putExtra("ReservationInfo",currentReservationInfo);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            ChargerApplication.getContext().startActivity(i);
         }
     }
 }

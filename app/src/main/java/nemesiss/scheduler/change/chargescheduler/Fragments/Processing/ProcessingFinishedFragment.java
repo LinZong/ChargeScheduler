@@ -1,4 +1,4 @@
-package nemesiss.scheduler.change.chargescheduler.Fragments;
+package nemesiss.scheduler.change.chargescheduler.Fragments.Processing;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,15 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import nemesiss.scheduler.change.chargescheduler.R;
 
-public class ProcessingFailedFragment extends Fragment
+public class ProcessingFinishedFragment extends Fragment
 {
-
     private View view;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        view = inflater.inflate(R.layout.processing_reservation_failed,container,false);
+        view = inflater.inflate(R.layout.processing_reservation_finished,container,false);
         return view;
     }
 }

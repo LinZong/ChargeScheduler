@@ -63,7 +63,7 @@ public class ReserverTypeFrag extends Fragment implements ChainFragment, Fragmen
         if(IsBusyTime)
         {
             IsBusyTimePeriodHint.setVisibility(View.VISIBLE);
-            //ChargeNightBtn.setEnabled(false);
+            ChargeNightBtn.setEnabled(false);
         }
         ChargeImmeBtn.setOnClickListener(SelectTypeListener);
         ChargeNightBtn.setOnClickListener(SelectTypeListener);

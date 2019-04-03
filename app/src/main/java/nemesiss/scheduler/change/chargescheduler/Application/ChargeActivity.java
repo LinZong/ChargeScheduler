@@ -27,7 +27,9 @@ public class ChargeActivity extends AppCompatActivity
         super.onDestroy();
         AllActivities.remove(this);
     }
-
+    public static List<Activity> getAllActivities(){
+        return AllActivities;
+    }
     public static void FinishAllActivities()
     {
         for(Activity ac : AllActivities)

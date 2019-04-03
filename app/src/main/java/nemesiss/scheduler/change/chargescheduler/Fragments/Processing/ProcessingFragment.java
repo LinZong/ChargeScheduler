@@ -1,4 +1,4 @@
-package nemesiss.scheduler.change.chargescheduler.Fragments;
+package nemesiss.scheduler.change.chargescheduler.Fragments.Processing;
 
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;

@@ -120,6 +120,10 @@ public class SearchChargerActivity extends ChargeActivity implements AMapLocatio
     private boolean DoubleBackExit = false;
     private Handler DoubleBackExitHandler = new Handler();
 
+    //Drawer动画相关
+    private Runnable ShouldHandleMenuClicked = null;
+    private float CurrentSlideOffset = 0.0f;
+
     //可观察对象
     private BehaviorSubject<Location> MyLocationObservable = BehaviorSubject.create();
     private BehaviorSubject<Stations> CurrentSearchStationObservable = BehaviorSubject.create();
@@ -182,6 +186,8 @@ public class SearchChargerActivity extends ChargeActivity implements AMapLocatio
         SlidingUpPanel.setAnchorPoint(0.40f);
         SlidingUpInitialStatus = SlidingUpPanel.onSaveInstanceState();
         SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        SlidingUpPanel.setFadeOnClickListener(v -> SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN));
+
 
         StartReservationBtn.setOnClickListener(view -> {
                 Intent it = new Intent(SearchChargerActivity.this, ReservationTypeSelectActivity.class);
@@ -189,7 +195,6 @@ public class SearchChargerActivity extends ChargeActivity implements AMapLocatio
                 startActivity(it);
         });
 
-        SlidingUpPanel.setFadeOnClickListener(v -> SlidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN));
 
 
         Search_SearchMapConstraintLayout.requestFocus();
@@ -209,6 +214,24 @@ public class SearchChargerActivity extends ChargeActivity implements AMapLocatio
             }
         });
 
+        Search_SearchMapDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener()
+        {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset)
+            {
+
+                super.onDrawerSlide(drawerView, slideOffset);
+
+                if(CurrentSlideOffset > slideOffset && slideOffset < 0.015f &&ShouldHandleMenuClicked!=null){
+                    ShouldHandleMenuClicked.run();
+                    ShouldHandleMenuClicked=null;
+                    runOnUiThread(()->{
+                        LeftSlideNavMenu.setCheckedItem(R.id.menu_none);
+                    });
+                }
+                CurrentSlideOffset = slideOffset;
+            }
+        });
         AutoSearchChargerBtn.setOnClickListener(this::AttemptAutoSearchChargeStation);
 
         int magId = getResources().getIdentifier("android:id/search_mag_icon", null, null);
@@ -243,19 +266,20 @@ public class SearchChargerActivity extends ChargeActivity implements AMapLocatio
         {
             case R.id.nav_my_reservation:
             {
-                startActivity(new Intent(SearchChargerActivity.this,MyReservationActivity.class));
+                ShouldHandleMenuClicked = () -> startActivity(new Intent(SearchChargerActivity.this,MyReservationActivity.class));
                 break;
             }
             case R.id.nav_settings:
             {
+                ShouldHandleMenuClicked = () -> {};
                 break;
             }
             default:
+                ShouldHandleMenuClicked = () -> {};
                 break;
         }
-        LeftSlideNavMenu.setCheckedItem(R.id.menu_none);
         Search_SearchMapDrawerLayout.closeDrawers();
-        return false;
+        return true;
     }
 
     private void ExpandDrawerSlider(View view)

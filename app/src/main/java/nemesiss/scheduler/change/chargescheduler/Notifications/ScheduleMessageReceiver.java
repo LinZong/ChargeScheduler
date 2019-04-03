@@ -1,5 +1,6 @@
 package nemesiss.scheduler.change.chargescheduler.Notifications;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,10 +8,14 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import cn.jpush.android.api.JPushInterface;
+import nemesiss.scheduler.change.chargescheduler.Application.ChargeActivity;
+import nemesiss.scheduler.change.chargescheduler.ReservationDetailedActivity;
+import nemesiss.scheduler.change.chargescheduler.Utils.GlobalUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class ScheduleMessageReceiver extends BroadcastReceiver
 {
@@ -37,6 +42,15 @@ public class ScheduleMessageReceiver extends BroadcastReceiver
                 int notifactionId = bundle.getInt(JPushInterface.EXTRA_NOTIFICATION_ID);
                 Log.d(TAG, "[MyReceiver] 接收到推送下来的通知的ID: " + notifactionId);
 
+
+                boolean topReservationInfo = ReservationDetailedActivity.IfReservationDetailIsTopActivity(context);
+                boolean running = GlobalUtils.IfAppIsRunning(context);
+                if(topReservationInfo && running){
+                    List<Activity> activitiesList = ChargeActivity.getAllActivities();
+                    ReservationDetailedActivity tf = (ReservationDetailedActivity)activitiesList.get(activitiesList.size()-1);
+                    tf.ReceiveNewReservationDetail();
+                }
+
             } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
                 Log.d(TAG, "[MyReceiver] 用户点击打开了通知");
 
@@ -46,6 +60,7 @@ public class ScheduleMessageReceiver extends BroadcastReceiver
 //                //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP );
 //                context.startActivity(i);
+
 
             } else if (JPushInterface.ACTION_RICHPUSH_CALLBACK.equals(intent.getAction())) {
                 Log.d(TAG, "[MyReceiver] 用户收到到RICH PUSH CALLBACK: " + bundle.getString(JPushInterface.EXTRA_EXTRA));

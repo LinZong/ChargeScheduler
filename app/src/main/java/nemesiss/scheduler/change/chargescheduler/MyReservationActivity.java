@@ -60,7 +60,6 @@ public class MyReservationActivity extends ChargeActivity
     }
 
 
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);

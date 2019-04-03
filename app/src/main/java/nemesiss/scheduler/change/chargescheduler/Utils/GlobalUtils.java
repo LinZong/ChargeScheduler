@@ -1,6 +1,7 @@
 package nemesiss.scheduler.change.chargescheduler.Utils;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.support.v7.app.ActionBar;
@@ -8,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 import android.widget.Toast;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargerApplication;
@@ -24,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 public class GlobalUtils
 {
     public static OkHttpClient.Builder clientInstance = null;
-
+    public static String packageName = "nemesiss.scheduler.change.chargescheduler";
     public static ProgressDialog ShowProgressDialog(Context ctx,boolean Cancelable,String title,String content){
         ProgressDialog dialog = new ProgressDialog(ctx);
         dialog.setCancelable(Cancelable);
@@ -117,6 +119,11 @@ public class GlobalUtils
         return date.getTime()/1000;
     }
 
+    public static String UnixStampToFmtString(long unix)
+    {
+        return TokenDateFormatter().format(UnixStamp2Date(unix));
+    }
+
     public static void ToolbarShowReturnButton(AppCompatActivity activity, Toolbar tb){
         activity.setSupportActionBar(tb);
         ActionBar ab = activity.getSupportActionBar();
@@ -124,5 +131,20 @@ public class GlobalUtils
         {
             ab.setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+
+    public static boolean IfAppIsRunning(Context context)
+    {
+        ActivityManager activityManager =
+                (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> processInfos
+                = activityManager.getRunningAppProcesses();
+        for(int i = 0; i < processInfos.size(); i++){
+            if(processInfos.get(i).processName.equals(packageName)){
+                return true;
+            }
+        }
+        return false;
     }
 }
