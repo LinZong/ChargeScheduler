@@ -19,6 +19,7 @@
                                                                app:contentScrim="@color/colorPrimary"
                                                                app:title="尚未分配充电站"
                                                                app:expandedTitleMarginStart="15dp"
+                                                               app:expandedTitleTextAppearance="@style/CollapsingBarTitleStyle"
                                                                android:id="@+id/ReservationDetailToolbar"
                                                                app:layout_scrollFlags="scroll|exitUntilCollapsed"
                                                                android:fitsSystemWindows="true">
@@ -57,7 +58,7 @@
                         android:drawableTop="@drawable/ic_navigation_blue_600_24dp"
                         app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="12dp"
                         app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="12dp"
-                        android:id="@+id/button">
+                        android:id="@+id/DoNavigationButton">
                 </Button>
 
                 <TextView
@@ -102,13 +103,13 @@
                 <TextView
                         android:ellipsize="end"
                         android:maxLines="2"
-                        android:text="广东省广州市外环东路382号"
+                        android:text="暂无信息"
                         android:layout_width="236dp"
                         android:layout_height="36dp"
                         android:id="@+id/StationAddress" android:layout_marginTop="8dp"
                         app:layout_constraintTop_toBottomOf="@+id/textView19"
                         app:layout_constraintStart_toStartOf="@+id/textView19"
-                        app:layout_constraintEnd_toStartOf="@+id/button" app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintEnd_toStartOf="@+id/DoNavigationButton" app:layout_constraintHorizontal_bias="0.0"
                         android:layout_marginBottom="12dp" app:layout_constraintBottom_toTopOf="@+id/guideline2"/>
                 <android.support.constraint.Guideline android:layout_width="wrap_content"
                                                       android:layout_height="wrap_content" android:id="@+id/guideline2"
@@ -135,13 +136,14 @@
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintBottom_toBottomOf="@+id/SchedulerStatus"/>
                 <Button
+                        android:visibility="gone"
                         android:textSize="16sp"
                         android:textColor="#fff"
                         style="@style/ButtonNormalStyle"
                         android:text="取消预约"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:id="@+id/button2"
+                        android:id="@+id/CancelReservationButton"
                         android:layout_marginBottom="24dp" app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="32dp"
                         app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="32dp"/>
@@ -152,7 +154,7 @@
                         android:background="?android:attr/listDivider"
                         android:layout_marginBottom="16dp"
                         app:layout_constraintBottom_toTopOf="@+id/guideline2" app:layout_constraintTop_toTopOf="parent"
-                        android:layout_marginTop="12dp" app:layout_constraintEnd_toStartOf="@+id/button"
+                        android:layout_marginTop="12dp" app:layout_constraintEnd_toStartOf="@+id/DoNavigationButton"
                         android:layout_marginEnd="8dp"/>
                 <android.support.constraint.Guideline android:layout_width="wrap_content"
                                                       android:layout_height="wrap_content" android:id="@+id/guideline4"

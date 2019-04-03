@@ -1,5 +1,6 @@
 package nemesiss.scheduler.change.chargescheduler;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -177,7 +178,10 @@ public class ProcessReservationActivity extends ChargeActivity
 
                     case 1300:
                         tips = "成功预约.";
-                        LoadProcessingStatusFragment(new ProcessingFinishedFragment());
+                        //LoadProcessingStatusFragment(new ProcessingFinishedFragment());
+                        Intent i =new Intent("nemesiss.scheduler.change.chargescheduler.detailActivityAction");
+                        startActivity(i);
+                        finish();
                         break;
                     case 1301:
                         tips = "用户不存在.";

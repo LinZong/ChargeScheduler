@@ -5,10 +5,18 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.AMapException;
+import com.amap.api.maps.AMapUtils;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.NaviPara;
 import com.bumptech.glide.Glide;
 import com.jaeger.library.StatusBarUtil;
 import nemesiss.scheduler.change.chargescheduler.Application.ChargeActivity;
@@ -44,9 +52,16 @@ public class ReservationDetailedActivity extends ChargeActivity
     TextView ReservationFinishChargeTime;
     @BindView(R.id.ReservationIDNum)
     TextView ReservationIDNum;
-
+    @BindView(R.id.StationAddress)
+    TextView StationAddress;
+    @BindView(R.id.CancelReservationButton)
+    Button CancelReservationButton;
+    @BindView(R.id.DoNavigationButton)
+    Button DoNavigationButton;
 
     private StationServices stationServices = null;
+    private ReservationInfo currentReservationInfo = null;
+    private Stations currentStationInfo = null;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -54,15 +69,41 @@ public class ReservationDetailedActivity extends ChargeActivity
         setContentView(R.layout.activity_reservation_detailed);
         stationServices = ChargerApplication.getStationServices();
         ButterKnife.bind(this);
-        ReservationInfo infoFromList = (ReservationInfo)getIntent().getSerializableExtra("ReservationInfo");
-        if(infoFromList!=null){
-            ReceiveNewReservationDetail(infoFromList);
+        DoNavigationButton.setOnClickListener(this::DoNavigation);
+        currentReservationInfo = (ReservationInfo)getIntent().getSerializableExtra("ReservationInfo");
+        if(currentReservationInfo!=null){
+            ReceiveNewReservationDetail(currentReservationInfo);
         }
-
-
+        else ReceiveNewReservationDetail();
         StatusBarUtil.setTransparent(this);
         Glide.with(ReservationDetailedActivity.this).load(R.drawable.scene).into(StationImage);
     }
+
+    private void DoNavigation(View view)
+    {
+        if(currentStationInfo!=null)
+        {
+            NaviPara naviPara = new NaviPara();
+            naviPara.setNaviStyle(NaviPara.DRIVING_DEFAULT);
+            naviPara.setTargetPoint(new LatLng(currentStationInfo.getLatitude(),currentStationInfo.getLongitude()));
+            try
+            {
+                AMapUtils.openAMapNavi(naviPara,ReservationDetailedActivity.this);
+            } catch (AMapException e)
+            {
+                if(e.getErrorMessage()==AMapException.AMAP_NOT_SUPPORT)
+                {
+                    Toast.makeText(ReservationDetailedActivity.this,"当前设备尚未安装高德导航, 跳转到下载页...", Toast.LENGTH_SHORT).show();
+                    AMapUtils.getLatestAMapApp(ReservationDetailedActivity.this);
+                }
+            }
+        }
+        else
+        {
+            Toast.makeText(ReservationDetailedActivity.this,"当前尚未分配充电站!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public static boolean IfReservationDetailIsTopActivity(Context context){
         ActivityManager manager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> runningTaskInfos = manager.getRunningTasks(1);
@@ -81,7 +122,13 @@ public class ReservationDetailedActivity extends ChargeActivity
             if(TaskRet.size()==1)
             {
                 ReservationInfo res = TaskRet.get(0);
+                currentReservationInfo = res;
                 MapReservationInfoToView(res);
+            }
+            else
+            {
+                currentReservationInfo = null;
+                currentStationInfo = null;
             }
         }).execute(null,1L);
     }
@@ -112,6 +159,8 @@ public class ReservationDetailedActivity extends ChargeActivity
         if(stationId!=null)
         {
             Stations station = stationServices.GetStationInfo(stationId);
+            currentStationInfo = station;
+            StationAddress.setText(station.getAddress());
             toolbarLayout.setTitle(station.getName());
         }
     }
@@ -120,6 +169,7 @@ public class ReservationDetailedActivity extends ChargeActivity
         if(IsAssigned==0)
         {
             SchedulerStatus.setText("正在为您分配充电桩...");
+            CancelReservationButton.setVisibility(View.VISIBLE);
             ChargeHolderNum.setText(null);
             return ;
         }
@@ -129,11 +179,13 @@ public class ReservationDetailedActivity extends ChargeActivity
                 case 0:{
                     SchedulerStatus.setText("已分配充电桩:");
                     ChargeHolderNum.setText("39号充电桩");
+                    CancelReservationButton.setVisibility(View.VISIBLE);
                     break;
                 }
                 case 1:{
                     SchedulerStatus.setText("充电已完成:");
                     ChargeHolderNum.setText("39号充电桩");
+
                     break;
                 }
                 case 2:{

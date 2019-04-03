@@ -30,4 +30,7 @@
     <style name="SearchChargeMapStyle" parent="AppTheme">
         <item name="colorPrimaryDark">#000</item>
     </style>
+    <style name="CollapsingBarTitleStyle">
+        <item name="android:textSize">24sp</item>
+    </style>
 </resources>
